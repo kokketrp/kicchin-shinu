@@ -6,12 +6,16 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "check-pipeline": "node --env-file=.env scripts/check-data-pipeline.js",
+    "weekly-report": "node --env-file=.env scripts/generate-weekly-report.js"
   },
   "dependencies": {
     "@astrojs/mdx": "^4.0.0",
     "@astrojs/rss": "^4.0.7",
     "@astrojs/sitemap": "^3.2.1",
-    "astro": "^5.0.0"
+    "@google-analytics/data": "^4.7.0",
+    "astro": "^5.0.0",
+    "googleapis": "^144.0.0"
   }
 }

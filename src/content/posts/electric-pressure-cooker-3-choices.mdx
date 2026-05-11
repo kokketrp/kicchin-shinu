@@ -11,6 +11,7 @@ draft: false
 import Conclusion from '../../components/Conclusion.astro';
 import CompareTable from '../../components/CompareTable.astro';
 import Glyph from '../../components/Glyph.astro';
+import ProductBox from '../../components/ProductBox.astro';
 
 <Conclusion title="暮らし方別の3機種">
   - **コスパ重視・初めての一台**：アイリスオーヤマ KPC-MA4-B（4L、2万円台）
@@ -53,6 +54,20 @@ import Glyph from '../../components/Glyph.astro';
 
 「初めての電気圧力鍋」として最も無難な選択肢です。容量4Lは3〜4人家族の主菜にちょうど良く、自動メニューが多いので献立の幅が広がりやすい。
 
+<ProductBox
+  keyword="アイリスオーヤマ 電気圧力鍋 KPC-MA4"
+  brand="IRIS OHYAMA"
+  rank={1}
+  specs={[
+    '容量 4.0L（3〜4人分）',
+    '自動メニュー 108 種',
+    '本体重量 約 4.4kg',
+    '低温調理・発酵モード搭載',
+  ]}
+  minPrice={15000}
+  maxPrice={28000}
+/>
+
 向く方：
 - 3〜4人家族
 - 作り置きを週末にまとめてやる方
@@ -66,6 +81,20 @@ import Glyph from '../../components/Glyph.astro';
 
 「自動メニューの少なさが、逆に使いやすい」というレビューが多い機種です。圧力調理の精度が高く、肉が柔らかく仕上がる。
 
+<ProductBox
+  keyword="シロカ おうちシェフ PRO SP-2DM251"
+  brand="SIROCA"
+  rank={2}
+  specs={[
+    '容量 2.4L（2〜3人分）',
+    '電気圧力鍋型（圧力 + 無水調理）',
+    '本体重量 約 3.6kg',
+    'スロー調理・発酵モード搭載',
+  ]}
+  minPrice={25000}
+  maxPrice={35000}
+/>
+
 向く方：
 - 2〜3人の家庭
 - 圧力調理を本格的に使い込みたい方
@@ -78,6 +107,20 @@ import Glyph from '../../components/Glyph.astro';
 ### Re・De Pot — 1.8L、デザイン家電
 
 「キッチンに置きっぱなしにしても景色を壊さない」設計です。1〜2人分にちょうど良く、軽くて取り回しがしやすい。
+
+<ProductBox
+  keyword="Re・De Pot 電気圧力鍋"
+  brand="Re・De"
+  rank={3}
+  specs={[
+    '容量 1.8L（1〜2人分）',
+    'コンパクト設計（出しっぱなし向け）',
+    '本体重量 約 2.5kg',
+    'シンプル操作（自動メニュー 5 種程度）',
+  ]}
+  minPrice={15000}
+  maxPrice={28000}
+/>
 
 向く方：
 - 1〜2人暮らし

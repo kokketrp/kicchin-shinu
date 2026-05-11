@@ -1,20 +1,63 @@
 ---
 // ProductBox — 商品 CTA ボックス（楽天/Amazon、F-system 統合）
+//
+// 2 つの使い方：
+//
+// A) keyword 駆動（推奨）：ビルド時に楽天 API 検索
+//    <ProductBox keyword="シャープ ヘルシオ ホットクック KN-HW24G" />
+//    → 楽天API: 商品名・価格・画像・URL を自動取得
+//    → Amazon: 同じキーワードでアソシエイトID付き検索 URL を自動生成
+//
+// B) 完全手動：name / rakutenUrl / amazonUrl をすべて指定
+//    <ProductBox name="..." rakutenUrl="..." amazonUrl="..." />
+//
+// keyword 駆動でも、props で個別上書きできる（例: 価格だけ別 / 画像だけ別 etc）
+import { findRakutenItem } from '../lib/rakuten';
+import { buildAmazonSearchUrl, buildRakutenSearchUrl } from '../lib/affiliate';
+
 export interface Props {
-  name: string;
+  keyword?: string;         // ← keyword 駆動の起点
+  name?: string;
   brand?: string;
   price?: string;
   rakutenUrl?: string;
   amazonUrl?: string;
   image?: string;
   features?: string[];
-  specs?: string[];         // alias: 旧API互換（MDXで specs={[...]} と書かれているため）
-  rank?: number;            // 順位を入れたい場合（No.01 表示）
+  specs?: string[];         // alias: 旧API互換
+  rank?: number;
+  minPrice?: number;        // 価格レンジで絞り込み（API検索時のみ）
+  maxPrice?: number;
 }
 
-const { name, brand, price, rakutenUrl, amazonUrl, image, features, specs, rank } = Astro.props;
-const items = features ?? specs ?? [];
-const rankStr = rank !== undefined ? `No.${String(rank).padStart(2, '0')}` : null;
+const props = Astro.props;
+
+// keyword があれば楽天 API から商品情報取得
+let fetched: Awaited<ReturnType<typeof findRakutenItem>> = null;
+if (props.keyword && !props.rakutenUrl) {
+  try {
+    fetched = await findRakutenItem(props.keyword, {
+      minPrice: props.minPrice,
+      maxPrice: props.maxPrice,
+    });
+  } catch (e) {
+    console.warn(`[ProductBox] 楽天API取得失敗 keyword="${props.keyword}":`, e);
+  }
+}
+
+// プロパティ解決（手動指定 > API 取得 > フォールバック検索URL）
+const name = props.name ?? fetched?.itemName ?? props.keyword ?? '商品名未設定';
+const price = props.price ?? (fetched?.itemPrice ? `¥${fetched.itemPrice.toLocaleString('ja-JP')}` : undefined);
+const image = props.image ?? fetched?.imageUrlLarge ?? fetched?.imageUrl ?? undefined;
+const rakutenUrl = props.rakutenUrl
+  ?? fetched?.affiliateUrl
+  ?? fetched?.itemUrl
+  ?? (props.keyword ? buildRakutenSearchUrl(props.keyword) : undefined);
+const amazonUrl = props.amazonUrl
+  ?? (props.keyword ? buildAmazonSearchUrl(props.keyword) : undefined);
+
+const items = props.features ?? props.specs ?? [];
+const rankStr = props.rank !== undefined ? `No.${String(props.rank).padStart(2, '0')}` : null;
 ---
 <div class="product paper paper--faint">
   <div class={`product__inner${!image ? ' product__inner--no-image' : ''}`}>
@@ -26,7 +69,7 @@ const rankStr = rank !== undefined ? `No.${String(rank).padStart(2, '0')}` : nul
     <div class="product__body">
       <div class="product__head">
         {rankStr && <span class="product__rank">{rankStr}</span>}
-        {brand && <span class="product__brand">{brand}</span>}
+        {props.brand && <span class="product__brand">{props.brand}</span>}
       </div>
       <h4 class="product__name">{name}</h4>
       {price && <div class="product__price">{price}</div>}

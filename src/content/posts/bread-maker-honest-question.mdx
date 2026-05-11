@@ -10,6 +10,7 @@ draft: false
 
 import Conclusion from '../../components/Conclusion.astro';
 import Glyph from '../../components/Glyph.astro';
+import ProductBox from '../../components/ProductBox.astro';
 
 <Conclusion title="買う前に確かめたい3つの問い">
   - **問い1**：あなたはパンが好きですか？それとも「焼きたてが好き」ですか？
@@ -71,13 +72,55 @@ import Glyph from '../../components/Glyph.astro';
 
 2万円前後で、基本機能を一通り揃えた入門モデル。「とりあえず試したい」方の最初の一台に向きます。
 
+<ProductBox
+  keyword="シロカ ホームベーカリー SHB-122"
+  brand="SIROCA"
+  rank={1}
+  specs={[
+    '基本機能を網羅（食パン・米粉・餅・うどん 等）',
+    '入門価格帯（2万円前後）',
+    'シンプル操作（最初の一台向け）',
+    'コンパクトサイズ',
+  ]}
+  minPrice={10000}
+  maxPrice={22000}
+/>
+
 ### 王道・高機能 — パナソニック SD-MDX4
 
 「ホームベーカリーといえば」の代表格。仕上がりの安定感とメニュー数が豊富です。
 
+<ProductBox
+  keyword="パナソニック ホームベーカリー SD-MDX4"
+  brand="Panasonic"
+  rank={2}
+  specs={[
+    '40 種以上の自動メニュー',
+    '「パン・ド・ミ」コース搭載',
+    '仕上がりの安定感が高評価',
+    '予約タイマー機能',
+  ]}
+  minPrice={30000}
+  maxPrice={50000}
+/>
+
 ### 国産小麦・本格派 — 象印 BB-ST10
 
 国産小麦に対応したコース、もっちり食感のレシピが豊富。本格的に使い込みたい方向け。
+
+<ProductBox
+  keyword="象印 ホームベーカリー BB-ST10"
+  brand="ZOJIRUSHI"
+  rank={3}
+  specs={[
+    '国産小麦対応コース搭載',
+    'もっちり食感のレシピ豊富',
+    '本格使い込み向け',
+    'パン羽根が取り外し可能',
+  ]}
+  minPrice={20000}
+  maxPrice={38000}
+/>
 
 <h2><Glyph name="bento" /> 「合わなかった人」の運用方法</h2>
 

@@ -1,5 +1,0 @@
-# Cloudflare Pages config (for direct `wrangler pages deploy` use)
-# Dashboard連携 (Git連携) で運用するなら必須ではないけど、CLIから手動デプロイする時用。
-name = "kicchin-shinu"
-compatibility_date = "2026-05-10"
-pages_build_output_dir = "./dist"

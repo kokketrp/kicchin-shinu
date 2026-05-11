@@ -1,0 +1,217 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SiteHeader from '../../components/SiteHeader.astro';
+import SiteFooter from '../../components/SiteFooter.astro';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('posts', ({ data }) => !data.draft);
+  return posts.map((post) => ({
+    params: { slug: post.id },
+    props: { post },
+  }));
+}
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+
+const formattedDate = post.data.pubDate.toISOString().slice(0, 10).replace(/-/g, '.');
+---
+<BaseLayout title={post.data.title} description={post.data.description}>
+  <SiteHeader />
+
+  <article class="post-article">
+    <div class="container container--narrow">
+      <header class="post-header">
+        <div class="post-header__masthead">
+          <span>SPEC&nbsp;COMPARE</span>
+          {post.data.category && <span class="post-header__cat">{post.data.category.toUpperCase()}</span>}
+          <span>{formattedDate}</span>
+          <span class="stamp stamp--xs post-header__stamp">比</span>
+        </div>
+        <h1 class="post-title">{post.data.title}</h1>
+        {post.data.description && <p class="post-lead">{post.data.description}</p>}
+        {post.data.tags.length > 0 && (
+          <div class="post-tags">
+            {post.data.tags.map((t: string) => <span class="post-tag">{t}</span>)}
+          </div>
+        )}
+      </header>
+
+      <div class="post-body prose">
+        <Content />
+      </div>
+    </div>
+  </article>
+
+  <SiteFooter />
+</BaseLayout>
+
+<style>
+  .post-article { padding: 80px 0 120px; }
+
+  /* ===== ヘッダー（フラットなタイポ） ===== */
+  .post-header {
+    margin-bottom: 56px;
+    padding-bottom: 32px;
+    border-bottom: 1px solid var(--hairline);
+  }
+  .post-header__masthead {
+    font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.22em;
+    color: var(--muted); text-transform: uppercase;
+    display: flex; gap: 18px; flex-wrap: wrap; align-items: center;
+    margin-bottom: 22px;
+  }
+  .post-header__cat {
+    color: var(--accent-deep);
+    font-weight: 500;
+  }
+  .post-header__stamp {
+    margin-left: auto;
+  }
+  .post-title {
+    font-family: var(--font-serif);
+    font-weight: 700;
+    font-size: clamp(24px, 3.6vw, 36px);
+    line-height: 1.55;
+    margin: 0 0 18px;
+    color: var(--text);
+    letter-spacing: 0.01em;
+  }
+  .post-lead {
+    color: var(--text-dim);
+    font-size: 15px;
+    line-height: 1.95;
+    max-width: 640px;
+    margin: 0 0 20px;
+  }
+  .post-tags {
+    display: flex; gap: 8px; flex-wrap: wrap;
+  }
+  .post-tag {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    color: var(--accent-deep);
+    background: var(--accent-soft);
+    padding: 4px 10px;
+    border-radius: 999px;
+    text-transform: uppercase;
+  }
+
+  /* ===== 本文 ===== */
+  .post-body :global(h2) {
+    font-family: var(--font-serif);
+    font-weight: 700;
+    font-size: clamp(22px, 2.8vw, 28px);
+    margin: 64px 0 20px;
+    padding-bottom: 12px;
+    border-bottom: 1px dashed var(--hairline);
+    color: var(--text);
+    letter-spacing: 0.01em;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .post-body :global(h2 .kc-ico) {
+    flex-shrink: 0;
+    color: var(--accent-deep);
+  }
+  .post-body :global(h3) {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 18px;
+    margin: 40px 0 14px;
+    color: var(--text);
+  }
+  .post-body :global(p) {
+    line-height: 1.95;
+    margin: 0 0 22px;
+    color: var(--text);
+  }
+  .post-body :global(p.case-lead) {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 24px;
+    margin-bottom: 12px;
+    font-size: 14.5px;
+  }
+  .post-body :global(p.case-lead strong) {
+    font-family: var(--font-heading);
+  }
+  .post-body :global(strong) { color: var(--text); font-weight: 700; }
+  .post-body :global(ul),
+  .post-body :global(ol) {
+    line-height: 1.95;
+    margin: 0 0 24px;
+    padding-left: 24px;
+  }
+  .post-body :global(li) { margin-bottom: 6px; }
+  .post-body :global(a) {
+    color: var(--accent-deep);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+  }
+  .post-body :global(blockquote) {
+    border-left: 3px solid var(--accent);
+    padding: 8px 20px;
+    margin: 32px 0;
+    background: var(--panel);
+    color: var(--text-dim);
+    font-family: var(--font-serif);
+    font-style: italic;
+  }
+  .post-body :global(code) {
+    background: var(--panel);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: var(--font-mono);
+    font-size: 0.9em;
+  }
+
+  /* ===== Markdown table（ふつうの | -- | -- | テーブル） ===== */
+  .post-body :global(table) {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 32px 0;
+    background: var(--bg-elev);
+    border: 1px solid var(--hairline);
+    border-radius: 10px;
+    overflow: hidden;
+    font-size: 14px;
+  }
+  .post-body :global(thead th) {
+    background: var(--panel-2);
+    color: var(--text);
+    font-family: var(--font-serif);
+    font-weight: 700;
+    text-align: left;
+    padding: 12px 16px;
+    border-bottom: 2px solid var(--hairline);
+    letter-spacing: 0.02em;
+  }
+  .post-body :global(tbody td) {
+    padding: 12px 16px;
+    border-bottom: 1px dashed var(--hairline);
+    color: var(--text);
+    line-height: 1.7;
+  }
+  .post-body :global(tbody tr:last-child td) { border-bottom: none; }
+
+  /* テーブル内の ○／－ を スタンプ風に飾る */
+  /* 単独セル「○」「－」「△」のみのセルを検出してスタイリング */
+  .post-body :global(tbody td:has(> *:only-child)),
+  .post-body :global(tbody td) {
+    /* ベースは普通 */
+  }
+  /* CSS :has() が効かない環境用に、セルが短い文字数のとき serif で大きく */
+  .post-body :global(tbody td) {
+    transition: none;
+  }
+
+  /* 1〜2文字セル（○ / － / △ / ✅ / ❌ など）を検出して serif アクセント色で大きく */
+  /* 純CSSでテキスト判定不可なので、auto-color via attr が無理。MDXで\<Verdict /\> を直接書くか、
+     post-body 内の table cells のうち中身が 1〜2文字のものは serif アクセント色で表示する近似を採用 */
+</style>

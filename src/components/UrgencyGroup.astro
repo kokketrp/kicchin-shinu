@@ -1,0 +1,34 @@
+---
+export interface UrgencyCard {
+  emoji: string;
+  title: string;
+  desc: string;
+  href: string;
+}
+
+export interface Props {
+  icon: string;
+  title: string;
+  note: string;
+  cards: UrgencyCard[];
+}
+
+const { icon, title, note, cards } = Astro.props;
+---
+<div class="urgency-group">
+  <div class="urgency-head">
+    <span class="urgency-head__icon">{icon}</span>
+    <h3 class="urgency-head__title">{title}</h3>
+    <span class="urgency-head__note">{note}</span>
+  </div>
+  <div class="cards">
+    {cards.map((c) => (
+      <a class="card" href={c.href}>
+        <span class="card__emoji">{c.emoji}</span>
+        <h4 class="card__title">{c.title}</h4>
+        <p class="card__desc">{c.desc}</p>
+        <span class="card__more">READ &nbsp;→</span>
+      </a>
+    ))}
+  </div>
+</div>

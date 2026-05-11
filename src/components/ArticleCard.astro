@@ -1,0 +1,43 @@
+---
+export interface Props {
+  href: string;
+  thumbVariant: 1 | 2 | 3 | 4 | 5 | 6;
+  glyph: string;
+  thumbLabel: string;
+  tag: string;
+  tagVariant?: 'default' | 'mustard' | 'neutral';
+  title: string;
+  lead: string;
+  date: string;
+  readTime: string;
+}
+
+const {
+  href,
+  thumbVariant,
+  glyph,
+  thumbLabel,
+  tag,
+  tagVariant = 'default',
+  title,
+  lead,
+  date,
+  readTime,
+} = Astro.props;
+
+const tagClass = tagVariant === 'default' ? 'tag' : `tag tag--${tagVariant}`;
+---
+<a class="article-card" href={href}>
+  <div class="article-card__thumb">
+    <div class={`thumb thumb--${thumbVariant}`}>
+      <div class="thumb__glyph">{glyph}</div>
+      <div class="thumb__label">{thumbLabel}</div>
+    </div>
+  </div>
+  <div class="article-card__body">
+    <span class={tagClass}>{tag}</span>
+    <h3 class="article-card__title">{title}</h3>
+    <p class="article-card__lead">{lead}</p>
+    <div class="article-card__meta"><span>{date}</span><span>{readTime}</span></div>
+  </div>
+</a>

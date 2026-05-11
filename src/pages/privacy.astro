@@ -1,0 +1,121 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SiteHeader from '../components/SiteHeader.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+---
+<BaseLayout
+  title="プライバシーポリシー — キチンと死ぬ"
+  description="キチンと死ぬ のプライバシーポリシー、Cookie・アクセス解析・アフィリエイトプログラムに関する開示。"
+>
+  <SiteHeader />
+
+  <article class="static-page">
+    <div class="container container--narrow">
+      <div class="eyebrow">PRIVACY &nbsp;/&nbsp; POLICY</div>
+      <h1 class="page-title">プライバシーポリシー</h1>
+      <p class="page-lead">最終更新日：2026年5月10日</p>
+
+      <h2>1. 個人情報の取得について</h2>
+      <p>
+        当サイトでは、お問い合わせフォームからのご連絡時にお名前、メールアドレス、ご質問内容を取得します。これらは返信の目的のみに利用し、第三者に提供することはありません。
+      </p>
+
+      <h2>2. アクセス解析ツールについて</h2>
+      <p>
+        当サイトは、アクセス解析のため Google Analytics を利用しています。Google Analytics は Cookie によりアクセス情報を収集しますが、個人を特定する情報は含まれません。
+      </p>
+      <p>
+        Cookie の使用を望まれない場合は、ブラウザの設定で無効化することができます。詳細は <a href="https://policies.google.com/technologies/partner-sites" target="_blank" rel="noopener">Google のポリシー</a> をご確認ください。
+      </p>
+
+      <h2>3. アフィリエイトプログラムについて</h2>
+      <p>
+        当サイトは、以下のアフィリエイトプログラムに参加しています。
+      </p>
+      <ul>
+        <li>Amazon アソシエイト・プログラム</li>
+        <li>楽天アフィリエイト</li>
+      </ul>
+      <p>
+        当サイトの商品リンクをクリックして商品をご購入いただいた場合、運営者に紹介料が支払われることがあります。読者の方に追加の費用は発生しません。
+      </p>
+      <p>
+        紹介する商品は、運営者または取材先が実際に試したものに限定しています。広告主からの依頼で「おすすめ」と書くことはありません。
+      </p>
+
+      <h2>4. Cookie について</h2>
+      <p>
+        Cookie は、ウェブサイトの利便性向上およびアクセス解析に利用されます。当サイトは、ブラウザの設定で Cookie を無効化することを尊重します。
+      </p>
+
+      <h2>5. 著作権について</h2>
+      <p>
+        当サイトに掲載されているテキスト・画像・図表の著作権は、当サイト運営者または各権利者に帰属します。引用される場合は、出典を明記してください。
+      </p>
+
+      <h2>6. 免責事項</h2>
+      <p>
+        当サイトの情報は、執筆時点のものです。商品のスペック・価格・仕様は変更される場合があります。最新情報は、各メーカー・販売店にてご確認ください。
+      </p>
+      <p>
+        当サイトの情報を利用した結果、生じた損害について、当サイト運営者は責任を負いかねます。
+      </p>
+
+      <h2>7. プライバシーポリシーの変更</h2>
+      <p>
+        本ポリシーの内容は、必要に応じて改定されることがあります。改定があった場合は、本ページにて告知します。
+      </p>
+
+      <h2>8. お問い合わせ</h2>
+      <p>
+        プライバシーに関するご質問は、<a href="/contact/">お問い合わせフォーム</a> よりお寄せください。
+      </p>
+    </div>
+  </article>
+
+  <SiteFooter />
+</BaseLayout>
+
+<style>
+  .static-page {
+    padding: 80px 0 120px;
+  }
+  .page-title {
+    font-family: var(--font-heading);
+    font-size: clamp(28px, 4vw, 44px);
+    line-height: 1.4;
+    margin: 16px 0 24px;
+    color: var(--text);
+  }
+  .page-lead {
+    color: var(--muted);
+    font-family: var(--font-mono);
+    font-size: 13px;
+    margin-bottom: 56px;
+    padding-bottom: 32px;
+    border-bottom: 1px solid var(--hairline);
+  }
+  .static-page h2 {
+    font-family: var(--font-heading);
+    font-size: 22px;
+    margin: 48px 0 16px;
+    color: var(--text);
+  }
+  .static-page p,
+  .static-page ul {
+    line-height: 1.95;
+    margin: 0 0 20px;
+    color: var(--text);
+  }
+  .static-page ul {
+    padding-left: 24px;
+  }
+  .static-page li {
+    margin-bottom: 6px;
+  }
+  .static-page a {
+    color: var(--accent-deep);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+</style>

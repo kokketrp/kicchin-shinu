@@ -1,0 +1,18 @@
+---
+export interface Props {
+  attribution?: string;
+}
+
+const { attribution = '— ABOUT  KICCHIN-SHINU' } = Astro.props;
+---
+<section class="strip" id="about" data-screen-label="01 Top — Quote strip">
+  <div class="container container--narrow">
+    <p class="strip__quote">
+      <slot>
+        家事が嫌いなのではなく、<em>余白がないだけ</em>かもしれない。<br>
+        家電を増やすのは、<em>あなたの時間を取り戻す</em>ためのひとつの選択肢です。
+      </slot>
+    </p>
+    <div class="strip__attr">{attribution}</div>
+  </div>
+</section>

@@ -1,0 +1,67 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SiteHeader from '../../components/SiteHeader.astro';
+import SiteFooter from '../../components/SiteFooter.astro';
+import ExtraCard from '../../components/ExtraCard.astro';
+
+const extras = await getCollection('extras');
+const sorted = extras.sort((a, b) => a.data.number - b.data.number);
+---
+<BaseLayout
+  title="番外編 ／ キチンと死ぬ"
+  description="本編とは別の視点や、季節の特別企画。夫視点、子供視点、夏休み号、年末号など。"
+>
+  <SiteHeader />
+
+  <section class="archive">
+    <div class="container container--narrow">
+      <div class="archive-head">
+        <h1 class="archive-title"><small>SECTION · EXTRAS</small>本編の、外側にあるもの</h1>
+        <p class="archive-lead">
+          別の人の視点で見たキッチン、季節限定の特別企画、ふだんの連載では書かない長めのエッセイ。<br>
+          年に数本のペースで、本編とは違う角度から書いていきます。
+        </p>
+      </div>
+
+      <div class="extra-grid">
+        {sorted.map((e) => (
+          <ExtraCard
+            number={e.data.number}
+            title={e.data.title}
+            mark={e.data.mark}
+            pubDate={e.data.draft ? undefined : e.data.pubDate}
+            href={e.data.draft ? undefined : `/extra/${e.id}/`}
+            readTime={e.data.draft ? undefined : '7 MIN'}
+            eyecatch={e.data.eyecatch}
+            perspective={e.data.perspective}
+            draft={e.data.draft}
+          />
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <SiteFooter />
+</BaseLayout>
+
+<style>
+  .archive { padding: 80px 0 120px; }
+  .archive-head { margin-bottom: 56px; padding-bottom: 28px; border-bottom: 2px dotted var(--hairline); }
+  .archive-title {
+    font-family: var(--font-heading); font-weight: 800;
+    font-size: clamp(26px, 4vw, 38px);
+    margin: 12px 0 16px;
+  }
+  .archive-title small {
+    display: block;
+    font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.22em;
+    color: var(--accent-deep); margin-bottom: 8px; font-weight: 500;
+  }
+  .archive-lead { color: var(--text-dim); font-size: 15px; line-height: 1.85; }
+  .extra-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 18px;
+  }
+</style>

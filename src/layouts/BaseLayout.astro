@@ -1,0 +1,33 @@
+---
+import IconSprite from '../components/IconSprite.astro';
+
+export interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title = "キチンと死ぬ ／ キッチン徒然帖 — キッチンで、すり減らない暮らしへ",
+  description = "連載エッセイと、閑話・番外編、そしてキッチン家電のスペック比較。台所と暮らしのあわいを、文学的な距離で書き留める読み物サイトです。",
+} = Astro.props;
+---
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{title}</title>
+  <meta name="description" content={description}>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=M+PLUS+Rounded+1c:wght@400;500;700;800&family=Noto+Sans+JP:wght@400;500;700&family=Noto+Serif+JP:wght@500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <IconSprite />
+  <slot />
+</body>
+</html>
+
+<style is:global>
+  @import "../styles/global.css";
+</style>

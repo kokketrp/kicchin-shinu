@@ -1,0 +1,318 @@
+---
+// ContactForm — 全サイト共用 お問い合わせフォーム
+//
+// 仕組み：
+//   - https://web3forms.com/ を中継エンドポイントに使用
+//   - すべてのサイトが同じアクセスキー（nishimotoclaude (at) gmail.com 宛て）を使う
+//   - hidden で `from_site` / `site_url` を送り、メール件名にもサイト名を埋める
+//
+// セットアップ：
+//   1) PUBLIC_WEB3FORMS_KEY を .env に設定
+//   2) Cloudflare Pages の Settings → Environment variables にも同じキーを登録
+//   3) ContactForm を /contact/ ページから呼び出す（siteName と siteUrl を渡す）
+//
+// 用法：
+//   <ContactForm siteName="キチンと死ぬ" siteUrl="https://kicchin-shinu.com" />
+//
+// 詳細：マネタイズ/Claudeマネタイズ/MULTI_SITE_CONTACT_FORM.md
+export interface Props {
+  siteName: string;
+  siteUrl: string;
+}
+
+const { siteName, siteUrl } = Astro.props;
+const accessKey = import.meta.env.PUBLIC_WEB3FORMS_KEY ?? '';
+const subjectPrefix = `[${siteName}] お問い合わせ`;
+---
+<div class="contact-form-wrap">
+  {!accessKey && (
+    <div class="contact-form__warning">
+      <strong>⚠ 設定未完了：</strong>
+      <code>.env</code> に <code>PUBLIC_WEB3FORMS_KEY</code> を設定すると、フォームが動作します。
+      <a href="https://web3forms.com/" target="_blank" rel="noopener">Web3Forms でキー取得 →</a>
+    </div>
+  )}
+
+  <form
+    class="contact-form"
+    id="contact-form"
+    action="https://api.web3forms.com/submit"
+    method="POST"
+  >
+    {/* ===== Web3Forms 制御フィールド ===== */}
+    <input type="hidden" name="access_key" value={accessKey} />
+    <input type="hidden" name="subject" id="contact-subject" value={subjectPrefix} />
+    <input type="hidden" name="from_name" value={siteName} />
+    <input type="hidden" name="from_site" value={siteName} />
+    <input type="hidden" name="site_url" value={siteUrl} />
+    <input type="hidden" name="redirect" value={`${siteUrl}/contact/thanks/`} />
+
+    {/* honeypot（非表示・bot 検知用） */}
+    <input type="checkbox" name="botcheck" class="contact-form__honeypot" tabindex="-1" autocomplete="off" />
+
+    <div class="contact-form__row">
+      <label class="contact-form__label" for="cf-name">
+        お名前 <span class="contact-form__req">*</span>
+      </label>
+      <input
+        class="contact-form__input"
+        type="text"
+        id="cf-name"
+        name="name"
+        required
+        autocomplete="name"
+        placeholder="例：山田 花子"
+      />
+    </div>
+
+    <div class="contact-form__row">
+      <label class="contact-form__label" for="cf-email">
+        メールアドレス <span class="contact-form__req">*</span>
+      </label>
+      <input
+        class="contact-form__input"
+        type="email"
+        id="cf-email"
+        name="email"
+        required
+        autocomplete="email"
+        placeholder="例：name@example.com"
+      />
+    </div>
+
+    <div class="contact-form__row">
+      <label class="contact-form__label" for="cf-topic">
+        ご相談の種類
+      </label>
+      <select class="contact-form__input" id="cf-topic" name="topic">
+        <option value="記事への質問・指摘">記事への質問・指摘</option>
+        <option value="記事リクエスト">取り上げて欲しいテーマ</option>
+        <option value="取材・寄稿">取材・寄稿</option>
+        <option value="アフィリエイト・広告">アフィリエイト・広告掲載</option>
+        <option value="その他">その他</option>
+      </select>
+    </div>
+
+    <div class="contact-form__row">
+      <label class="contact-form__label" for="cf-message">
+        ご相談内容 <span class="contact-form__req">*</span>
+      </label>
+      <textarea
+        class="contact-form__input contact-form__textarea"
+        id="cf-message"
+        name="message"
+        required
+        rows="6"
+        placeholder="どのような内容かをお書きください。返信に必要な情報があれば、あわせて記載してください。"
+      ></textarea>
+    </div>
+
+    <p class="contact-form__note">
+      送信ボタンを押すと、{siteName} 運営者宛てにメールが届きます。<br>
+      3営業日以内を目標に返信します。プライバシーポリシーは <a href="/privacy/">こちら</a>。
+    </p>
+
+    <div class="contact-form__actions">
+      <button class="contact-form__submit" type="submit" disabled={!accessKey}>
+        送信する <span class="contact-form__submit-arrow">→</span>
+      </button>
+      <span class="contact-form__result" id="contact-result" aria-live="polite"></span>
+    </div>
+  </form>
+</div>
+
+<script>
+  const form = document.getElementById('contact-form') as HTMLFormElement | null;
+  const result = document.getElementById('contact-result');
+  const subjectInput = document.getElementById('contact-subject') as HTMLInputElement | null;
+  const topicInput = document.getElementById('cf-topic') as HTMLSelectElement | null;
+
+  if (form && result && subjectInput && topicInput) {
+    const updateSubject = () => {
+      const base = subjectInput.dataset.base ?? subjectInput.value;
+      subjectInput.dataset.base = base;
+      subjectInput.value = `${base} ／ ${topicInput.value}`;
+    };
+    topicInput.addEventListener('change', updateSubject);
+    updateSubject();
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const submitBtn = form.querySelector('.contact-form__submit') as HTMLButtonElement | null;
+      result.textContent = '送信中...';
+      result.className = 'contact-form__result is-pending';
+      if (submitBtn) submitBtn.disabled = true;
+
+      try {
+        const formData = new FormData(form);
+        const res = await fetch('https://api.web3forms.com/submit', {
+          method: 'POST',
+          body: formData,
+        });
+        if (res.ok) {
+          result.textContent = '✓ 送信できました。3営業日以内に返信します。';
+          result.className = 'contact-form__result is-ok';
+          form.reset();
+        } else {
+          result.textContent = '送信に失敗しました。時間をおいて再度お試しください。';
+          result.className = 'contact-form__result is-error';
+        }
+      } catch (err) {
+        result.textContent = '送信エラー。ネットワーク接続をご確認の上、再度お試しください。';
+        result.className = 'contact-form__result is-error';
+      } finally {
+        if (submitBtn) submitBtn.disabled = false;
+      }
+    });
+  }
+</script>
+
+<style>
+  /* ============================================
+     ContactForm — ポータブル CSS（kicchin / deskscape 両対応）
+     CSS変数はすべてフォールバック付き
+     ============================================ */
+  .contact-form-wrap {
+    margin: 32px 0;
+  }
+
+  .contact-form__warning {
+    background: var(--secondary-soft, rgba(232, 174, 84, 0.16));
+    border: 1px solid var(--secondary, #E8AE54);
+    color: var(--text, #2D2419);
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-size: 13px;
+    line-height: 1.7;
+    margin-bottom: 24px;
+  }
+  .contact-form__warning code {
+    background: rgba(0, 0, 0, 0.05);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: var(--font-mono, ui-monospace, monospace);
+    font-size: 12px;
+  }
+  .contact-form__warning a {
+    color: var(--accent-deep, var(--accent, #B84A36));
+    text-decoration: underline;
+    margin-left: 8px;
+  }
+
+  .contact-form {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+    background: var(--bg-elev, #FFFFFF);
+    border: 1px solid var(--hairline, rgba(0, 0, 0, 0.1));
+    border-left: 4px solid var(--accent, #E2664D);
+    border-radius: 10px;
+    padding: 28px 32px;
+    position: relative;
+  }
+  @media (max-width: 640px) {
+    .contact-form { padding: 22px 18px; }
+  }
+
+  .contact-form__honeypot {
+    position: absolute;
+    left: -9999px;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .contact-form__row {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .contact-form__label {
+    font-family: var(--font-mono, ui-monospace, monospace);
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent-deep, var(--accent, #B84A36));
+    font-weight: 500;
+  }
+  .contact-form__req {
+    color: var(--warning, #C75444);
+    font-weight: 700;
+  }
+
+  .contact-form__input {
+    font-family: var(--font-body, var(--font-sans, system-ui, sans-serif));
+    font-size: 15px;
+    color: var(--text, #2D2419);
+    background: var(--bg, #FBF7F2);
+    border: 1px solid var(--hairline, rgba(0, 0, 0, 0.1));
+    border-radius: 6px;
+    padding: 10px 14px;
+    line-height: 1.6;
+    transition: border-color .2s, background .2s;
+  }
+  .contact-form__input:focus {
+    outline: none;
+    border-color: var(--accent, #E2664D);
+    background: var(--bg-elev, #FFFFFF);
+  }
+  .contact-form__textarea {
+    resize: vertical;
+    min-height: 120px;
+    font-family: var(--font-body, var(--font-sans, system-ui, sans-serif));
+  }
+
+  .contact-form__note {
+    font-size: 12.5px;
+    color: var(--text-dim, var(--text-soft, #6B5D4F));
+    line-height: 1.85;
+    margin: 0;
+    padding-top: 12px;
+    border-top: 1px dashed var(--hairline, rgba(0, 0, 0, 0.1));
+  }
+  .contact-form__note a {
+    color: var(--accent-deep, var(--accent, #B84A36));
+    text-decoration: underline;
+  }
+
+  .contact-form__actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .contact-form__submit {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 28px;
+    background: var(--accent, #E2664D);
+    color: var(--bg-elev, #FFFFFF);
+    border: 0;
+    border-radius: 999px;
+    font-family: var(--font-heading, var(--font-sans, system-ui, sans-serif));
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 0.04em;
+    cursor: pointer;
+    transition: transform .15s, box-shadow .2s, opacity .2s;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.16);
+  }
+  .contact-form__submit:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 10px 22px rgba(0, 0, 0, 0.20);
+  }
+  .contact-form__submit:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .contact-form__result {
+    font-family: var(--font-mono, ui-monospace, monospace);
+    font-size: 12px;
+    letter-spacing: 0.06em;
+  }
+  .contact-form__result.is-pending { color: var(--muted, #A89888); }
+  .contact-form__result.is-ok { color: var(--good, #6B9E67); }
+  .contact-form__result.is-error { color: var(--warning, #C75444); }
+</style>

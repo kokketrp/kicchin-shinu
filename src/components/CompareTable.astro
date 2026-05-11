@@ -1,0 +1,131 @@
+---
+// CompareTable — 製品スペック比較表（F-system 統合）
+// 原稿用紙ヘッダ＋ serif 数字、✅/❌ は Verdict マーカーに自動変換
+import Verdict from './Verdict.astro';
+
+export interface Row {
+  label: string;
+  values: (string | number)[];
+}
+
+export interface Props {
+  headers: string[];
+  rows: Row[];
+  caption?: string;
+}
+
+const { headers, rows, caption } = Astro.props;
+
+// セル値が verdict 系なら Verdict、それ以外は plain text
+function isVerdict(v: string | number): boolean {
+  if (typeof v !== 'string') return false;
+  return ['✅', '○', '◯', 'ok', '❌', '－', '-', '×', 'no', '△', 'partial'].includes(v);
+}
+---
+<div class="compare-wrap">
+  {caption && (
+    <div class="compare__caption">
+      <span class="compare__caption-label">SPEC TABLE</span>
+      <span class="compare__caption-text">{caption}</span>
+    </div>
+  )}
+  <div class="compare__scroll paper paper--faint">
+    <table class="compare">
+      <thead>
+        <tr>
+          <th></th>
+          {headers.map((h) => <th>{h}</th>)}
+        </tr>
+      </thead>
+      <tbody>
+        {rows.map((r) => (
+          <tr>
+            <th class="compare__rowlabel">{r.label}</th>
+            {r.values.map((v) => (
+              <td class={isVerdict(v) ? 'compare__cell--verdict' : ''}>
+                {isVerdict(v) ? <Verdict v={String(v)} /> : v}
+              </td>
+            ))}
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<style>
+  .compare-wrap {
+    margin: 36px 0 40px;
+  }
+  .compare__caption {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px dashed var(--hairline);
+  }
+  .compare__caption-label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    color: var(--accent-deep);
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+  .compare__caption-text {
+    font-family: var(--font-serif);
+    font-size: 13px;
+    color: var(--text-dim);
+    font-weight: 600;
+  }
+
+  .compare__scroll {
+    position: relative;
+    overflow-x: auto;
+    border: 1px solid var(--hairline);
+    border-radius: 10px;
+    background: var(--bg-elev);
+  }
+  .compare {
+    width: 100%;
+    border-collapse: collapse;
+    background: transparent;
+    font-size: 14px;
+    position: relative;
+    z-index: 2;
+  }
+  .compare th,
+  .compare td {
+    padding: 14px 18px;
+    text-align: left;
+    border-bottom: 1px dashed var(--hairline);
+    vertical-align: middle;
+  }
+  .compare thead th {
+    background: var(--panel-2);
+    color: var(--text);
+    font-family: var(--font-serif);
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 0.02em;
+    border-bottom: 2px solid var(--hairline);
+  }
+  .compare__rowlabel {
+    background: rgba(245, 237, 226, 0.5);
+    color: var(--text-dim);
+    font-weight: 500;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  .compare tbody tr:last-child th,
+  .compare tbody tr:last-child td {
+    border-bottom: none;
+  }
+  .compare__cell--verdict {
+    text-align: center;
+  }
+</style>

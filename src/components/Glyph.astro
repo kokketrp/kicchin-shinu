@@ -1,0 +1,59 @@
+---
+// Glyph — F-system カテゴリアイコン
+// Claude Design v1 (glyphs/v1.html) の正式 SVG をスプライト経由で参照
+// 12種：coffee / box / bento / sun / tie / pot / bubble / bread / clock / coin / rice / carrot
+//
+// 用法：
+//   <Glyph name="coffee" />              ← デフォルト：md / coral / disc なし
+//   <Glyph name="☕" size="lg" disc />    ← 絵文字でも OK（自動マップ）、disc 背景つき
+//   <Glyph name="sun" tone="mustard" size="sm" />
+export interface Props {
+  name: string;
+  size?: 'xs' | 'sm' | 'md' | 'lg';
+  tone?: 'coral' | 'mustard' | 'muted' | 'ink' | 'inherit';
+  disc?: boolean;
+  discSize?: 'sm' | 'md' | 'lg';
+}
+
+const {
+  name,
+  size = 'md',
+  tone = 'coral',
+  disc = false,
+  discSize = 'md',
+} = Astro.props;
+
+// 絵文字 → glyph 名 マップ（既存 frontmatter 互換）
+const emojiMap: Record<string, string> = {
+  '☕': 'coffee',
+  '📦': 'box',
+  '🍱': 'bento',
+  '🌻': 'sun',
+  '👔': 'tie',
+  '🍲': 'pot',
+  '🫧': 'bubble',
+  '🍞': 'bread',
+  '⏱': 'clock',
+  '⏱️': 'clock',
+  '💴': 'coin',
+  '🍙': 'rice',
+  '🥕': 'carrot',
+};
+const resolvedName = emojiMap[name] ?? name;
+const symbolId = `i-${resolvedName}`;
+
+const toneClass = tone === 'inherit' ? '' : `kc-tone-${tone}`;
+const sizeClass = `kc-ico--${size}`;
+const discClass = disc ? `kc-disc kc-disc--${discSize}` : '';
+---
+{disc ? (
+  <span class={`${discClass} ${toneClass}`} aria-hidden="true">
+    <svg class={`kc-ico ${sizeClass}`}>
+      <use href={`#${symbolId}`} />
+    </svg>
+  </span>
+) : (
+  <svg class={`kc-ico ${sizeClass} ${toneClass}`} aria-hidden="true">
+    <use href={`#${symbolId}`} />
+  </svg>
+)}

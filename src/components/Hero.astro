@@ -1,0 +1,170 @@
+---
+import { getCollection } from 'astro:content';
+
+// Hero — H1: 原稿用紙そのもの ── 第一話の書き出し
+// 最新の本編を動的に取得してマストヘッドに反映
+
+const allEssays = await getCollection('essays', ({ data }) => !data.draft);
+const latestEssay = allEssays.sort((a, b) => a.data.episode - b.data.episode)[0];
+const totalCount = await (async () => {
+  const e = await getCollection('essays');
+  const i = await getCollection('interludes');
+  const x = await getCollection('extras');
+  const p = await getCollection('posts');
+  return e.length + i.length + x.length + p.length;
+})();
+const updatedDate = latestEssay
+  ? latestEssay.data.pubDate.toISOString().slice(0, 10).replace(/-/g, '.')
+  : '2026.05.10';
+const epStr = latestEssay ? String(latestEssay.data.episode).padStart(2, '0') : '01';
+const totalStr = String(totalCount).padStart(3, '0');
+const heroMark = latestEssay?.data.mark ?? '読';
+const heroHref = latestEssay ? `/essay/${latestEssay.id}/` : '/essay/';
+---
+<section class="hero hero-h1" data-screen-label="01 Top — Hero">
+  <span class="stamp stamp--lg hero-h1__stamp">{heroMark}</span>
+  <div class="hero-h1__inner">
+    <div class="hero-h1__masthead">
+      <span>連載 <b>キッチン徒然帖</b></span>
+      <span>第&nbsp;<b>{epStr}</b>&nbsp;話</span>
+      <span>{updatedDate} &nbsp;UPDATED</span>
+      <span>通巻 <b>{totalStr}</b></span>
+    </div>
+    <div class="hero-h1__chap">
+      第一話 <small>FIRST &nbsp;CHAPTER</small>
+    </div>
+    <h1 class="hero-h1__title">
+      キッチンで<span class="em">死ぬほど消耗してた</span><span class="small">30代主婦が、</span><br>
+      自動調理器を3台買い揃えてみたら<br>
+      <span class="em--mustard">平日が静かになった</span><span class="small">話。</span>
+    </h1>
+    <p class="hero-h1__sub">
+      キチンと死ぬ ── 台所と暮らしのあわいを、文学的な距離で書き留める読み物サイトです。<br>
+      連載エッセイと、閑話・番外編、そして家電のスペック比較を、<br>
+      答えを急がず、選ぶための材料として、しずかに並べていきます。
+    </p>
+    <div class="hero-h1__cta">
+      <a class="hero-cta" href={heroHref}>
+        <span class="hero-cta__stamp">{heroMark}</span>
+        第一話を読む
+      </a>
+      <a class="hero-ghost" href="#essays">連載目次へ →</a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .hero { border-radius: 0; overflow: hidden; position: relative; }
+
+  /* H1: manuscript opening */
+  .hero-h1 {
+    background: var(--bg-elev);
+    padding: 64px 48px 56px;
+    position: relative;
+    margin: 0 auto;
+    max-width: 1180px;
+  }
+  .hero-h1::before {
+    content: "";
+    position: absolute; inset: 24px;
+    background-image:
+      linear-gradient(to right, rgba(184, 74, 54, 0.16) 0 1px, transparent 1px 14px),
+      linear-gradient(to bottom, rgba(184, 74, 54, 0.16) 0 1px, transparent 1px 14px);
+    background-size: 14px 14px;
+    border: 1px solid rgba(184, 74, 54, 0.22);
+    border-radius: 6px;
+    opacity: 0.5; pointer-events: none;
+  }
+  .hero-h1__inner { position: relative; z-index: 2; max-width: 900px; }
+
+  .hero-h1__masthead {
+    font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.22em;
+    color: var(--muted); text-transform: uppercase;
+    display: flex; gap: 18px; flex-wrap: wrap; align-items: center;
+    margin-bottom: 28px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--hairline);
+  }
+  .hero-h1__masthead :global(b) { color: var(--text); font-weight: 500; }
+
+  .hero-h1__chap {
+    font-family: var(--font-serif); font-weight: 700;
+    font-size: clamp(20px, 2.4vw, 26px);
+    color: var(--accent-deep); margin-bottom: 18px;
+    letter-spacing: 0.08em;
+  }
+  .hero-h1__chap small {
+    font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.2em;
+    color: var(--muted); margin-left: 14px; font-weight: 500; text-transform: uppercase;
+  }
+
+  .hero-h1__title {
+    font-family: var(--font-serif); font-weight: 700;
+    font-size: clamp(28px, 5.2vw, 56px);
+    line-height: 1.55; color: var(--text);
+    letter-spacing: 0.01em;
+    margin: 0;
+  }
+  .hero-h1__title :global(.em) {
+    color: var(--accent-deep);
+    background-image: linear-gradient(transparent 70%, var(--accent-soft) 70%, var(--accent-soft) 96%, transparent 96%);
+    padding: 0 0.04em;
+  }
+  .hero-h1__title :global(.em--mustard) {
+    color: #8a5a1c;
+    background-image: linear-gradient(transparent 70%, var(--secondary-soft) 70%, var(--secondary-soft) 96%, transparent 96%);
+  }
+  .hero-h1__title :global(.small) { font-size: 0.6em; color: var(--text-dim); font-weight: 600; }
+
+  .hero-h1__sub {
+    margin-top: 32px;
+    color: var(--text-dim); font-size: 16px; line-height: 2;
+    max-width: 560px;
+    font-family: var(--font-body);
+  }
+  .hero-h1__cta {
+    margin-top: 36px;
+    display: flex; flex-wrap: wrap; gap: 16px; align-items: center;
+  }
+  .hero-h1__stamp { position: absolute; top: 32px; right: 40px; z-index: 3; }
+
+  .hero-cta {
+    display: inline-flex; align-items: center; gap: 12px;
+    padding: 14px 24px;
+    background: var(--accent); color: var(--bg-elev);
+    border-radius: 999px;
+    font-family: var(--font-heading); font-weight: 700; font-size: 14px;
+    letter-spacing: 0.04em;
+    border: 0;
+    cursor: pointer;
+    transition: transform .15s, box-shadow .2s;
+    box-shadow: 0 6px 18px rgba(226,102,77,0.28);
+    text-decoration: none;
+  }
+  .hero-cta:hover { transform: translateY(-1px); box-shadow: 0 10px 22px rgba(226,102,77,0.34); }
+  .hero-cta__stamp {
+    background: var(--bg-elev); color: var(--accent-deep);
+    border: 1.4px solid var(--accent-deep);
+    font-family: var(--font-serif); font-weight: 700; font-size: 14px;
+    width: 28px; height: 28px;
+    display: inline-flex; align-items: center; justify-content: center;
+    border-radius: 4px; line-height: 1;
+    transform: rotate(-6deg);
+    transition: transform .35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .hero-ghost {
+    font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.14em;
+    color: var(--text-dim); text-decoration: none;
+    border-bottom: 1px solid var(--text-dim);
+    padding: 4px 2px;
+    text-transform: uppercase;
+    transition: color .2s, border-color .2s;
+  }
+  .hero-ghost:hover { color: var(--accent-deep); border-color: var(--accent-deep); }
+
+  @media (max-width: 720px) {
+    .hero-h1 { padding: 48px 28px 44px; }
+    .hero-h1__stamp { top: 18px; right: 22px; }
+    .hero-h1__title { font-size: clamp(22px, 6vw, 32px); }
+  }
+</style>

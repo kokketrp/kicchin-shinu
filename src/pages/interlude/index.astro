@@ -1,0 +1,63 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SiteHeader from '../../components/SiteHeader.astro';
+import SiteFooter from '../../components/SiteFooter.astro';
+import InterludeCard from '../../components/InterludeCard.astro';
+
+const interludes = await getCollection('interludes');
+const sorted = interludes.sort((a, b) => a.data.number - b.data.number);
+---
+<BaseLayout
+  title="閑話休題 ／ キチンと死ぬ"
+  description="本編の合間に挟む、軽めの脱線と道具の話。コーヒーミル、保存容器、そんな小さなものたちのこと。"
+>
+  <SiteHeader />
+
+  <section class="archive">
+    <div class="container container--narrow">
+      <div class="archive-head">
+        <h1 class="archive-title"><small>SECTION · INTERLUDES</small>本編の、合間のはなし</h1>
+        <p class="archive-lead">
+          連載エッセイの本編とは少し離れて、ちいさな道具や、ふとした台所の風景を書き留めています。<br>
+          コーヒーミル、保存容器、お弁当箱。本編の脇道のような、軽めの読み物です。
+        </p>
+      </div>
+
+      <div class="interlude-stack">
+        {sorted.map((i) => (
+          <InterludeCard
+            number={i.data.number}
+            title={i.data.title}
+            mark={i.data.mark}
+            pubDate={i.data.draft ? undefined : i.data.pubDate}
+            href={i.data.draft ? undefined : `/interlude/${i.id}/`}
+            readTime={i.data.draft ? undefined : '5 MIN'}
+            eyecatch={i.data.eyecatch}
+            relatedEssay={i.data.relatedEssay}
+            draft={i.data.draft}
+          />
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <SiteFooter />
+</BaseLayout>
+
+<style>
+  .archive { padding: 80px 0 120px; }
+  .archive-head { margin-bottom: 56px; padding-bottom: 28px; border-bottom: 1px dashed var(--hairline); }
+  .archive-title {
+    font-family: var(--font-heading); font-weight: 800;
+    font-size: clamp(26px, 4vw, 38px);
+    margin: 12px 0 16px;
+  }
+  .archive-title small {
+    display: block;
+    font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.22em;
+    color: var(--secondary); margin-bottom: 8px; font-weight: 500;
+  }
+  .archive-lead { color: var(--text-dim); font-size: 15px; line-height: 1.85; }
+  .interlude-stack { display: flex; flex-direction: column; gap: 12px; }
+</style>

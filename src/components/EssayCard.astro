@@ -1,0 +1,115 @@
+---
+// EssayCard — E3 連載目次形式（タイムライン縦並び）
+// 公開済 / draft（執筆中）両対応。サムネ無しで本の目次風に並ぶ。
+export interface Props {
+  episode: number;
+  title: string;
+  excerpt?: string;       // タイトル断片（HTMLタグ可、<b>で強調）
+  mark?: string;           // 検印一文字
+  pubDate?: Date;
+  href?: string;
+  category?: string;       // 自動調理 / 食洗機 等
+  readTime?: string;       // "14 MIN"
+  draft?: boolean;
+  expectedDate?: string;   // "EXPECTED 2026.06"
+}
+
+const {
+  episode,
+  title,
+  excerpt,
+  mark,
+  pubDate,
+  href,
+  category,
+  readTime,
+  draft = false,
+  expectedDate,
+} = Astro.props;
+
+const epStr = String(episode).padStart(2, '0');
+const dateStr = pubDate ? pubDate.toISOString().slice(0, 10).replace(/-/g, '.') : '準備中';
+const stampClass = `stamp stamp--lg essay-toc__stamp${draft ? ' stamp--draft' : ''}`;
+const Tag = draft || !href ? 'div' : 'a';
+---
+<Tag class={`essay-toc__row${draft ? ' is-draft' : ''}`} href={href}>
+  <div class="essay-toc__chap">
+    <small>CHAPTER</small>
+    第<span class="num">{epStr}</span>話
+  </div>
+  <div class="essay-toc__body">
+    <div class="essay-toc__title">{title}</div>
+    {excerpt && <p class="essay-toc__excerpt" set:html={excerpt} />}
+    <div class="essay-toc__meta">
+      <span>{dateStr}</span>
+      {readTime && <span>{readTime}</span>}
+      {expectedDate && <span>{expectedDate}</span>}
+      {category && <span>{category}</span>}
+    </div>
+  </div>
+  {mark && <span class={stampClass}>{mark}</span>}
+</Tag>
+
+<style>
+  .essay-toc__row {
+    display: grid;
+    grid-template-columns: 92px 1fr auto;
+    align-items: center;
+    gap: 20px;
+    padding: 22px 26px;
+    border-bottom: 1px dashed var(--hairline);
+    position: relative;
+    transition: background .2s;
+    color: var(--text);
+    text-decoration: none;
+  }
+  .essay-toc__row:last-of-type { border-bottom: 0; }
+  .essay-toc__row:hover { background: var(--panel-2); }
+  .essay-toc__row::before {
+    content: "";
+    position: absolute; inset: 14px 26px;
+    background-image:
+      linear-gradient(to right, rgba(184, 74, 54, 0.10) 0 1px, transparent 1px 14px);
+    background-size: 14px 14px;
+    opacity: 0.4; pointer-events: none;
+  }
+
+  .essay-toc__chap {
+    font-family: var(--font-serif); font-weight: 700; font-size: 32px;
+    color: var(--text); line-height: 1;
+    z-index: 2;
+  }
+  .essay-toc__chap small {
+    display: block;
+    font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.18em;
+    color: var(--muted); margin-bottom: 4px; font-weight: 500; text-transform: uppercase;
+  }
+  .essay-toc__chap .num { color: var(--accent-deep); font-feature-settings: "tnum"; }
+
+  .essay-toc__body { z-index: 2; min-width: 0; }
+  .essay-toc__title {
+    font-family: var(--font-heading); font-weight: 700; font-size: 16px; line-height: 1.65;
+    color: var(--text);
+  }
+  .essay-toc__excerpt {
+    font-family: var(--font-serif); font-size: 13px; line-height: 1.75;
+    color: var(--text-dim); margin-top: 4px;
+  }
+  .essay-toc__excerpt :global(b) { color: var(--accent-deep); font-weight: 700; }
+  .essay-toc__meta {
+    margin-top: 6px;
+    font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.14em;
+    color: var(--muted); text-transform: uppercase; display: flex; gap: 14px; flex-wrap: wrap;
+  }
+  .essay-toc__stamp { z-index: 3; }
+
+  /* draft 行 */
+  .is-draft .essay-toc__title { color: var(--muted); }
+  .is-draft { opacity: 0.85; cursor: default; }
+
+  @media (max-width: 600px) {
+    .essay-toc__row { grid-template-columns: 70px 1fr; padding: 18px 18px; gap: 14px; }
+    .essay-toc__stamp { grid-column: 1 / -1; justify-self: flex-end; }
+    .essay-toc__chap { font-size: 24px; }
+  }
+</style>

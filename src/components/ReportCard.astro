@@ -1,0 +1,130 @@
+---
+// ReportCard — P1 VOL.NN + カテゴリ色ストリップ（比較レポート）
+export interface Props {
+  vol: number;
+  title: string;
+  pubDate: Date;
+  href: string;
+  category?: string;       // "自動調理" 等
+  readTime?: string;       // "14 MIN"
+  colorIndex?: 1 | 2 | 3 | 4;   // ストリップの色番号
+  tagVariant?: 'default' | 'mustard' | 'neutral';
+  description?: string;
+}
+
+const {
+  vol,
+  title,
+  pubDate,
+  href,
+  category,
+  readTime,
+  colorIndex = 1,
+  tagVariant = 'default',
+  description,
+} = Astro.props;
+
+const volStr = String(vol).padStart(3, '0');
+const dateStr = pubDate.toISOString().slice(0, 10).replace(/-/g, '.');
+const tagClass = `card-tag${tagVariant !== 'default' ? ` card-tag--${tagVariant}` : ''}`;
+---
+<a class="card post-card" href={href}>
+  <div class={`card-thumb p1-thumb p1-thumb--0${colorIndex} paper paper--faint`}>
+    <div class="p1-thumb__strip"></div>
+    <div class="p1-thumb__main">
+      <div class="p1-thumb__top">
+        <span><b>SPEC&nbsp;COMPARE</b> · {dateStr}</span>
+        {readTime && <span>{readTime}</span>}
+      </div>
+      <div class="p1-thumb__no">
+        <small>VOL.</small>{volStr}
+      </div>
+      <div class="p1-thumb__bot">
+        {category && <span class="p1-thumb__cat">{category}</span>}
+        <span class="stamp stamp--xs">比</span>
+      </div>
+    </div>
+  </div>
+  <div class="card-body">
+    <span class={tagClass}>比較レポート</span>
+    <h4 class="card-title">{title}</h4>
+    {description && <p class="card-desc">{description}</p>}
+    <div class="card-meta">
+      <span>{dateStr}</span>
+      {readTime && <span>{readTime}</span>}
+    </div>
+  </div>
+</a>
+
+<style>
+  .card {
+    background: var(--bg-elev);
+    border: 1px solid var(--hairline);
+    border-radius: 14px;
+    overflow: hidden;
+    display: flex; flex-direction: column;
+    transition: transform .25s, box-shadow .25s;
+    text-decoration: none;
+    color: var(--text);
+  }
+  .card:hover { transform: translateY(-2px); box-shadow: 0 12px 32px rgba(45, 36, 25, 0.08); }
+  .card-thumb { aspect-ratio: 16 / 9; position: relative; overflow: hidden; }
+  .card-body { padding: 18px 20px 22px; display: flex; flex-direction: column; gap: 8px; }
+  .card-tag {
+    align-self: flex-start; font-family: var(--font-mono); font-size: 10px;
+    letter-spacing: 0.16em; text-transform: uppercase; color: var(--accent-deep);
+    background: var(--accent-soft); padding: 4px 9px; border-radius: 999px;
+  }
+  .card-tag--mustard { color: #8a5a1c; background: var(--secondary-soft); }
+  .card-tag--neutral { color: var(--text-dim); background: var(--panel); }
+  .card-title {
+    font-family: var(--font-heading); font-weight: 700; font-size: 15px; line-height: 1.65;
+    color: var(--text);
+  }
+  .card-desc {
+    font-size: 12px; line-height: 1.7; color: var(--text-dim);
+  }
+  .card-meta {
+    font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.14em;
+    color: var(--muted); text-transform: uppercase; display: flex; gap: 12px; margin-top: 2px;
+  }
+
+  /* ===== p1-thumb ===== */
+  .post-card .card-thumb { background: var(--bg-elev); }
+  .p1-thumb { display: grid; grid-template-columns: 8px 1fr; }
+  .p1-thumb__strip { background: var(--accent); position: relative; z-index: 2; }
+  .p1-thumb--01 .p1-thumb__strip { background: var(--accent); }
+  .p1-thumb--02 .p1-thumb__strip { background: var(--secondary); }
+  .p1-thumb--03 .p1-thumb__strip { background: #6B9E67; }
+  .p1-thumb--04 .p1-thumb__strip { background: var(--accent-deep); }
+  .p1-thumb__main {
+    padding: 18px 22px;
+    display: flex; flex-direction: column; justify-content: space-between;
+  }
+  .p1-thumb__top {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.18em;
+    color: var(--muted); text-transform: uppercase;
+    z-index: 2;
+  }
+  .p1-thumb__top :global(b) { color: var(--text-dim); font-weight: 500; }
+  .p1-thumb__no {
+    font-family: var(--font-mono); font-weight: 500; font-size: 32px;
+    color: var(--text); line-height: 1; letter-spacing: 0.02em;
+    z-index: 2;
+  }
+  .p1-thumb__no small {
+    display: block; font-size: 11px; letter-spacing: 0.2em;
+    color: var(--accent-deep); font-weight: 500; margin-bottom: 6px;
+  }
+  .p1-thumb__cat {
+    font-family: var(--font-heading); font-weight: 700; font-size: 13px;
+    color: var(--text-dim); z-index: 2;
+  }
+  .p1-thumb__bot {
+    display: flex; justify-content: space-between; align-items: center;
+    font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.16em;
+    color: var(--muted); text-transform: uppercase;
+    z-index: 2;
+  }
+</style>

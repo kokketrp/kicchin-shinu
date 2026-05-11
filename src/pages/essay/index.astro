@@ -1,0 +1,80 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SiteHeader from '../../components/SiteHeader.astro';
+import SiteFooter from '../../components/SiteFooter.astro';
+import EssayCard from '../../components/EssayCard.astro';
+
+const essays = await getCollection('essays');
+const sorted = essays.sort((a, b) => a.data.episode - b.data.episode);
+
+const draftCategoryByEpisode: Record<number, string> = {
+  2: '食洗機',
+  3: 'ベーカリー',
+  4: '時短家電',
+};
+const draftExpectedByEpisode: Record<number, string> = {
+  2: 'EXPECTED 2026.06',
+  3: 'EXPECTED 2026.06',
+  4: 'EXPECTED 2026.07',
+};
+---
+<BaseLayout
+  title="本編 連載エッセイ ／ キチンと死ぬ"
+  description="キチンと死ぬ の本編。30代主婦が、台所と暮らしのあわいを書き留める連載エッセイの全話一覧です。"
+>
+  <SiteHeader />
+
+  <section class="archive">
+    <div class="container container--narrow">
+      <div class="archive-head">
+        <h1 class="archive-title"><small>SECTION · ESSAYS</small>連載・本編 全話</h1>
+        <p class="archive-lead">
+          台所と暮らしのあわいを、時系列で書いている連作です。<br>
+          急がず、第一話から、または気になる話から、お読みください。
+        </p>
+      </div>
+
+      <div class="essay-toc">
+        {sorted.map((e) => (
+          <EssayCard
+            episode={e.data.episode}
+            title={e.data.title}
+            excerpt={e.data.excerpt}
+            mark={e.data.mark}
+            pubDate={e.data.draft ? undefined : e.data.pubDate}
+            href={e.data.draft ? undefined : `/essay/${e.id}/`}
+            readTime={e.data.draft ? undefined : '14 MIN'}
+            draft={e.data.draft}
+            expectedDate={e.data.draft ? draftExpectedByEpisode[e.data.episode] : undefined}
+            category={draftCategoryByEpisode[e.data.episode] ?? '自動調理'}
+          />
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <SiteFooter />
+</BaseLayout>
+
+<style>
+  .archive { padding: 80px 0 120px; }
+  .archive-head { margin-bottom: 56px; padding-bottom: 28px; border-bottom: 1px solid var(--hairline); }
+  .archive-title {
+    font-family: var(--font-heading); font-weight: 800;
+    font-size: clamp(28px, 4vw, 40px);
+    margin: 12px 0 16px; color: var(--text);
+  }
+  .archive-title small {
+    display: block;
+    font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.22em;
+    color: var(--accent-deep); margin-bottom: 8px; font-weight: 500;
+  }
+  .archive-lead { color: var(--text-dim); font-size: 15px; line-height: 1.85; }
+  .essay-toc {
+    background: var(--bg-elev);
+    border: 1px solid var(--hairline);
+    border-radius: 14px;
+    overflow: hidden;
+  }
+</style>

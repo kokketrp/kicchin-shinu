@@ -1,0 +1,101 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SiteHeader from '../../components/SiteHeader.astro';
+import SiteFooter from '../../components/SiteFooter.astro';
+
+export async function getStaticPaths() {
+  const extras = await getCollection('extras', ({ data }) => !data.draft);
+  return extras.map((item) => ({
+    params: { slug: item.id },
+    props: { item },
+  }));
+}
+
+const { item } = Astro.props;
+const { Content } = await render(item);
+const formattedDate = item.data.pubDate.toISOString().slice(0, 10);
+const numStr = String(item.data.number).padStart(2, '0');
+---
+<BaseLayout title={`番外編 #${numStr} ${item.data.title} ／ キチンと死ぬ`} description={item.data.description}>
+  <SiteHeader />
+
+  <article class="extra-article">
+    <div class="container container--narrow">
+      <header class="extra-header">
+        <div class="extra-marker">
+          <span class="extra-marker__label">番外編</span>
+          <span class="extra-marker__num">#{numStr}</span>
+          {item.data.perspective && (
+            <span class="extra-marker__pov">— {item.data.perspective}</span>
+          )}
+        </div>
+        <h1 class="extra-title">{item.data.title}</h1>
+        {item.data.subtitle && <p class="extra-subtitle">{item.data.subtitle}</p>}
+        <div class="extra-meta">
+          <span>{formattedDate}</span>
+          {item.data.season && <span>{item.data.season}</span>}
+        </div>
+      </header>
+
+      <div class="extra-body prose">
+        <Content />
+      </div>
+
+      <div class="extra-foot">
+        <a href="/extra/" class="extra-foot__link">▦ 番外編 すべて見る</a>
+        <a href="/essay/" class="extra-foot__link">▦ 本編へ戻る</a>
+      </div>
+    </div>
+  </article>
+
+  <SiteFooter />
+</BaseLayout>
+
+<style>
+  .extra-article { padding: 80px 0 80px; }
+  .extra-header { margin-bottom: 48px; padding-bottom: 28px; border-bottom: 2px dotted var(--hairline); }
+  .extra-marker {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 10px;
+    background: linear-gradient(90deg, var(--accent-soft), transparent);
+    border-left: 3px solid var(--accent);
+    padding: 8px 16px;
+    margin-bottom: 20px;
+    font-family: var(--font-mono);
+  }
+  .extra-marker__label { font-size: 11px; letter-spacing: 0.15em; color: var(--accent-deep); }
+  .extra-marker__num { font-size: 14px; color: var(--accent); font-weight: 700; }
+  .extra-marker__pov { font-size: 11px; color: var(--text-dim); font-style: italic; }
+  .extra-title {
+    font-family: var(--font-heading);
+    font-size: clamp(24px, 3.8vw, 38px);
+    line-height: 1.5;
+    margin: 0 0 12px;
+  }
+  .extra-subtitle { font-family: var(--font-heading); font-size: 16px; color: var(--text-dim); line-height: 1.6; margin: 0 0 16px; font-style: italic; }
+  .extra-meta { display: flex; gap: 16px; font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.08em; color: var(--muted); }
+  .extra-body :global(h2) { font-family: var(--font-heading); font-size: 22px; margin: 48px 0 16px; }
+  .extra-body :global(p) { line-height: 1.95; margin: 0 0 22px; color: var(--text); }
+  .extra-body :global(em) { font-style: normal; background: linear-gradient(transparent 60%, var(--accent-soft) 60%); padding: 0 2px; }
+  .extra-body :global(a) { color: var(--accent-deep); text-decoration: underline; text-underline-offset: 3px; }
+  .extra-foot {
+    margin-top: 64px;
+    padding-top: 32px;
+    border-top: 2px dotted var(--hairline);
+    display: flex;
+    gap: 24px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .extra-foot__link {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    color: var(--accent-deep);
+    text-decoration: none;
+    border-bottom: 1px solid var(--accent-deep);
+    padding-bottom: 2px;
+  }
+</style>

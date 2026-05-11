@@ -1,0 +1,152 @@
+---
+// IconSprite — F-system 共通 SVG スプライト
+// BaseLayout の body 先頭で1度だけインクルード。各コンポーネントは <use href="#i-..."> で参照。
+// すべて Claude Design v1 (glyphs/v1.html) からの正式版。
+---
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+
+    {/* ============== カテゴリアイコン 12種 ============== */}
+
+    {/* coffee: cup + steam */}
+    <symbol id="i-coffee" viewBox="0 0 32 32">
+      <path d="M11 6.5c.4 1.4-.6 2.2-.4 3.6M15 5.5c.4 1.6-.7 2.3-.4 3.8M19 6.8c.4 1.4-.7 2.2-.4 3.5"/>
+      <path d="M7.5 12.5h14l-1.4 9.4c-.3 2-2 3.5-4 3.5h-3.2c-2 0-3.7-1.5-4-3.5z"/>
+      <path d="M21.4 15.2c2.4-.2 3.6 1 3.6 2.8s-1.3 2.9-3.4 3"/>
+      <path d="M9 25.4h11"/>
+    </symbol>
+
+    {/* box: lidded container */}
+    <symbol id="i-box" viewBox="0 0 32 32">
+      <rect x="6" y="11" width="20" height="14" rx="1.5"/>
+      <path d="M5 11h22"/>
+      <path d="M9.5 11V8.8c0-.8.6-1.4 1.4-1.4h10.2c.8 0 1.4.6 1.4 1.4V11"/>
+      <path d="M13 18h6"/>
+    </symbol>
+
+    {/* bento: divided box */}
+    <symbol id="i-bento" viewBox="0 0 32 32">
+      <rect x="5" y="8" width="22" height="16" rx="1.5"/>
+      <path d="M16 8v16"/>
+      <path d="M5 16h11"/>
+      <circle cx="10.5" cy="12" r="1.5"/>
+      <path d="M19 12c1-.6 2-.6 3 0M19 15c1-.6 2-.6 3 0M19 18c1-.6 2-.6 3 0M19 21c1-.6 2-.6 3 0"/>
+      <path d="M8 19l2 2M11 18l2 3"/>
+    </symbol>
+
+    {/* sun: brush rays */}
+    <symbol id="i-sun" viewBox="0 0 32 32">
+      <circle cx="16" cy="16" r="6"/>
+      <path d="M16 4.5v3.5M16 24v3.5M27.5 16H24M8 16H4.5M24 8l-2.4 2.4M10.4 21.6L8 24M24 24l-2.4-2.4M10.4 10.4L8 8"/>
+    </symbol>
+
+    {/* tie: necktie */}
+    <symbol id="i-tie" viewBox="0 0 32 32">
+      <path d="M12 5.5l4 3 4-3"/>
+      <path d="M13 8.5l-1.6 4 4.6 14 4.6-14-1.6-4"/>
+      <path d="M11.4 12.5h9.2"/>
+    </symbol>
+
+    {/* pot: cooking pot with steam */}
+    <symbol id="i-pot" viewBox="0 0 32 32">
+      <path d="M11 5.5c.4 1.4-.6 2.2-.4 3.6M16 5c.4 1.4-.6 2.2-.4 3.6M21 5.5c.4 1.4-.6 2.2-.4 3.6"/>
+      <path d="M5 13h22"/>
+      <path d="M7 13l1 11.4c.1 1.5 1.4 2.6 2.9 2.6h10.2c1.5 0 2.7-1.1 2.9-2.6L25 13"/>
+      <path d="M3.5 16h2M26.5 16h2"/>
+    </symbol>
+
+    {/* bubble: foam blob */}
+    <symbol id="i-bubble" viewBox="0 0 32 32">
+      <circle cx="11" cy="17" r="5"/>
+      <circle cx="20" cy="14" r="6.5"/>
+      <circle cx="22" cy="22" r="3.5"/>
+      <circle cx="9" cy="9" r="1.6"/>
+      <circle cx="25" cy="7" r="1"/>
+    </symbol>
+
+    {/* bread: loaf with crust scoring */}
+    <symbol id="i-bread" viewBox="0 0 32 32">
+      <path d="M5 16c0-3 2.5-5.5 5.5-5.5h11c3 0 5.5 2.5 5.5 5.5v6c0 1.4-1.1 2.5-2.5 2.5H7.5C6.1 24.5 5 23.4 5 22z"/>
+      <path d="M10 14l1.5 7M15 14l1.5 7M20 14l1.5 7"/>
+    </symbol>
+
+    {/* clock */}
+    <symbol id="i-clock" viewBox="0 0 32 32">
+      <circle cx="16" cy="17" r="9"/>
+      <path d="M16 17l4 -3.5"/>
+      <path d="M16 11v1.5"/>
+      <path d="M22 17h-1.4"/>
+      <path d="M16 23v-1.4"/>
+      <path d="M10 17h1.4"/>
+      <path d="M14 5.5h4"/>
+    </symbol>
+
+    {/* coin: yen */}
+    <symbol id="i-coin" viewBox="0 0 32 32">
+      <circle cx="16" cy="16" r="10.5"/>
+      <path d="M11.5 11l4.5 6 4.5-6"/>
+      <path d="M16 17v5"/>
+      <path d="M12.5 18.5h7M12.5 21h7"/>
+    </symbol>
+
+    {/* rice: onigiri */}
+    <symbol id="i-rice" viewBox="0 0 32 32">
+      <path d="M7 23.5c0-7 4-15 9-15s9 8 9 15z"/>
+      <path d="M11 19h10v4.5H11z"/>
+    </symbol>
+
+    {/* carrot icon (small set) */}
+    <symbol id="i-carrot" viewBox="0 0 32 32">
+      <path d="M11 14l9 9c.8.8 2.2.8 3 0l1-1c.8-.8.8-2.2 0-3l-9-9z"/>
+      <path d="M14 11l-3-1-1-3M11.5 9l-2.5-.5M9 11l-2-.5"/>
+      <path d="M13 14l1-1.5M16 17l1-1.5M19 20l1-1.5"/>
+    </symbol>
+
+    {/* ============== ロゴ用キャロット 4種 ============== */}
+
+    {/* L1: 線画 */}
+    <symbol id="logo-carrot-line" viewBox="0 0 64 64">
+      <path d="M18 30l24 24c1.6 1.6 4.4 1.6 6 0l3-3c1.6-1.6 1.6-4.4 0-6L27 21z" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M22 22 l-5-2 -2-5 M18 17 l-5 -1 M15 21 l-4 -1" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M22 30 l1.5 -2 M27 35 l1.5 -2 M32 40 l1.5 -2 M37 45 l1.5 -2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+    </symbol>
+
+    {/* L2: 塗り（採用） */}
+    <symbol id="logo-carrot-fill" viewBox="0 0 64 64">
+      <path d="M19 32l23 23c1.6 1.6 4.4 1.6 6 0l1.5-1.5c1.6-1.6 1.6-4.4 0-6L26 24z" fill="currentColor"/>
+      <path d="M23 24c-3-1.5-5.5-1-7-2 -1.4-1 -2-3 -2-5 2 0 4 .6 5 2 1 1.5.5 4 2 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M22 30 l1.5 -2 M27 35 l1.5 -2 M32 40 l1.5 -2 M37 45 l1.5 -2" fill="none" stroke="rgba(255,255,255,0.7)" stroke-width="1.8" stroke-linecap="round"/>
+    </symbol>
+
+    {/* L3: 検印枠 */}
+    <symbol id="logo-carrot-seal" viewBox="0 0 64 64">
+      <rect x="6" y="6" width="52" height="52" rx="6" fill="none" stroke="currentColor" stroke-width="2.4"/>
+      <path d="M22 32l16 16c1.2 1.2 3.2 1.2 4.4 0l1-1c1.2-1.2 1.2-3.2 0-4.4L27 26z" fill="currentColor"/>
+      <path d="M25 26 c-2-1 -4-.7 -5-1.6 -1-1 -1.4-2.4 -1.4-3.6 1.4 0 2.8.4 3.6 1.4 1 1 .8 3 1.6 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+
+    {/* L4: 筆 */}
+    <symbol id="logo-carrot-brush" viewBox="0 0 64 64">
+      <path d="M14 32 C14 26, 22 20, 30 20 C42 20, 52 28, 52 38 C52 46, 46 52, 38 52 C26 52, 14 42, 14 32 Z" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" transform="rotate(35 32 32)"/>
+      <path d="M22 18 c-1-3 -4-4 -7-4 0 3 1 6 4 7 M19 22 c-3-1 -6-1 -8 -3 1 -2 4 -3 6 -2" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+
+    {/* ============== Verdict 筆記号（V2 用、予備） ============== */}
+    <symbol id="v-ok" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="9"/>
+      <path d="M7.5 12.5l3 3 6-6.5"/>
+    </symbol>
+    <symbol id="v-no" viewBox="0 0 24 24">
+      <path d="M5 12c0 -2 1 -4 3 -5.5"/>
+      <path d="M5 12c0 4 4 7 8 7 2 0 4 -.6 5.5 -1.6"/>
+      <path d="M19 12c0 -4 -4 -7 -8 -7"/>
+      <path d="M7 17l10 -10" stroke-dasharray="2 2"/>
+    </symbol>
+    <symbol id="v-partial" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="9"/>
+      <path d="M12 3a9 9 0 0 1 0 18z" fill="currentColor" stroke="none" opacity="0.18"/>
+      <path d="M12 6.5v11"/>
+    </symbol>
+
+  </defs>
+</svg>

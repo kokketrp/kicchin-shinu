@@ -1,0 +1,83 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SiteHeader from '../../components/SiteHeader.astro';
+import SiteFooter from '../../components/SiteFooter.astro';
+import ReportCard from '../../components/ReportCard.astro';
+
+const posts = await getCollection('posts', ({ data }) => !data.draft);
+const sorted = posts.sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime());
+
+function colorOf(category?: string): 1 | 2 | 3 | 4 {
+  if (!category) return 1;
+  const c = category.toLowerCase();
+  if (c.includes('dishwasher')) return 2;
+  if (c.includes('pressure')) return 3;
+  if (c.includes('bakery') || c.includes('bread')) return 4;
+  return 1;
+}
+function tagVariantOf(category?: string): 'default' | 'mustard' | 'neutral' {
+  if (!category) return 'default';
+  const c = category.toLowerCase();
+  if (c.includes('dishwasher')) return 'mustard';
+  if (c.includes('bakery') || c.includes('bread')) return 'neutral';
+  return 'default';
+}
+---
+<BaseLayout
+  title="比較レポート ／ キチンと死ぬ"
+  description="キッチン家電のスペック比較。容量・価格・性能で、断定せずに整理しています。"
+>
+  <SiteHeader />
+
+  <section class="archive">
+    <div class="container container--narrow">
+      <div class="archive-head">
+        <h1 class="archive-title"><small>SECTION · REPORTS</small>スペックで、整理しています</h1>
+        <p class="archive-lead">
+          家電同士を、容量・価格・洗いやすさといったスペックで並べた比較レポートです。<br>
+          答えは出さず、選ぶための材料を、丁寧にそろえることだけを心がけています。
+        </p>
+      </div>
+
+      <div class="report-grid">
+        {sorted.map((p, i) => (
+          <ReportCard
+            vol={sorted.length - i + 8}
+            title={p.data.title}
+            pubDate={p.data.pubDate}
+            href={`/posts/${p.id}/`}
+            category={p.data.category}
+            readTime="14 MIN"
+            colorIndex={colorOf(p.data.category)}
+            tagVariant={tagVariantOf(p.data.category)}
+            description={p.data.description}
+          />
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <SiteFooter />
+</BaseLayout>
+
+<style>
+  .archive { padding: 80px 0 120px; }
+  .archive-head { margin-bottom: 56px; padding-bottom: 28px; border-bottom: 1px solid var(--hairline); }
+  .archive-title {
+    font-family: var(--font-heading); font-weight: 800;
+    font-size: clamp(26px, 4vw, 38px);
+    margin: 12px 0 16px;
+  }
+  .archive-title small {
+    display: block;
+    font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.22em;
+    color: var(--accent-deep); margin-bottom: 8px; font-weight: 500;
+  }
+  .archive-lead { color: var(--text-dim); font-size: 15px; line-height: 1.85; }
+  .report-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 18px;
+  }
+</style>

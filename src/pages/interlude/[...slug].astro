@@ -1,0 +1,121 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SiteHeader from '../../components/SiteHeader.astro';
+import SiteFooter from '../../components/SiteFooter.astro';
+
+export async function getStaticPaths() {
+  const interludes = await getCollection('interludes', ({ data }) => !data.draft);
+  return interludes.map((item) => ({
+    params: { slug: item.id },
+    props: { item },
+  }));
+}
+
+const { item } = Astro.props;
+const { Content } = await render(item);
+const formattedDate = item.data.pubDate.toISOString().slice(0, 10);
+const numStr = String(item.data.number).padStart(2, '0');
+---
+<BaseLayout title={`閑話 #${numStr} ${item.data.title} ／ キチンと死ぬ`} description={item.data.description}>
+  <SiteHeader />
+
+  <article class="aside-article">
+    <div class="container container--narrow">
+      <header class="aside-header">
+        <div class="aside-marker">
+          <span class="aside-marker__label">閑話休題</span>
+          <span class="aside-marker__num">#{numStr}</span>
+        </div>
+        <h1 class="aside-title">{item.data.title}</h1>
+        {item.data.subtitle && <p class="aside-subtitle">{item.data.subtitle}</p>}
+        <div class="aside-meta">
+          <span>{formattedDate}</span>
+          {item.data.relatedEssay && (
+            <span>本編 第{String(item.data.relatedEssay).padStart(2, '0')}話 と同時期</span>
+          )}
+        </div>
+      </header>
+
+      <div class="aside-body prose">
+        <Content />
+      </div>
+
+      <div class="aside-foot">
+        <a href="/interlude/" class="aside-foot__link">▦ 閑話休題 すべて見る</a>
+        <a href="/essay/" class="aside-foot__link">▦ 本編へ戻る</a>
+      </div>
+    </div>
+  </article>
+
+  <SiteFooter />
+</BaseLayout>
+
+<style>
+  .aside-article { padding: 80px 0 80px; }
+  .aside-header { margin-bottom: 48px; padding-bottom: 28px; border-bottom: 1px dashed var(--hairline); }
+  .aside-marker {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 10px;
+    background: var(--secondary-soft);
+    border-radius: 4px;
+    padding: 6px 14px;
+    margin-bottom: 20px;
+    font-family: var(--font-mono);
+  }
+  .aside-marker__label {
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    color: var(--text-dim);
+  }
+  .aside-marker__num {
+    font-size: 14px;
+    color: var(--secondary);
+    font-weight: 700;
+  }
+  .aside-title {
+    font-family: var(--font-heading);
+    font-size: clamp(24px, 3.5vw, 36px);
+    line-height: 1.5;
+    margin: 0 0 12px;
+  }
+  .aside-subtitle {
+    font-family: var(--font-heading);
+    font-size: 15px;
+    color: var(--text-dim);
+    line-height: 1.6;
+    margin: 0 0 16px;
+    font-style: italic;
+  }
+  .aside-meta {
+    display: flex;
+    gap: 16px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+  }
+  .aside-body :global(h2) { font-family: var(--font-heading); font-size: 22px; margin: 48px 0 16px; }
+  .aside-body :global(p) { line-height: 1.95; margin: 0 0 22px; color: var(--text); }
+  .aside-body :global(em) { font-style: normal; background: linear-gradient(transparent 60%, var(--secondary-soft) 60%); padding: 0 2px; }
+  .aside-body :global(a) { color: var(--accent-deep); text-decoration: underline; text-underline-offset: 3px; }
+  .aside-foot {
+    margin-top: 64px;
+    padding-top: 32px;
+    border-top: 1px dashed var(--hairline);
+    display: flex;
+    gap: 24px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .aside-foot__link {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    color: var(--accent-deep);
+    text-decoration: none;
+    border-bottom: 1px solid var(--accent-deep);
+    padding-bottom: 2px;
+  }
+</style>

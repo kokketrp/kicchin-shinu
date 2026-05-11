@@ -1,0 +1,83 @@
+---
+export interface NavItem {
+  label: string;
+  href: string;
+  active?: boolean;
+}
+
+export interface Props {
+  nav?: NavItem[];
+}
+
+const {
+  nav = [
+    { label: '本編', href: '/essay/' },
+    { label: '閑話', href: '/interlude/' },
+    { label: '番外', href: '/extra/' },
+    { label: '比較', href: '/posts/' },
+    { label: 'このサイトのこと', href: '/about/' },
+  ],
+} = Astro.props;
+---
+<header class="site-header" data-screen-label="01 Top — Header">
+  <div class="site-header__inner">
+    <a href="/" class="brand" aria-label="キチンと死ぬ ホーム">
+      <svg class="brand__carrot" width="32" height="32" viewBox="0 0 64 64" aria-hidden="true">
+        <use href="#logo-carrot-fill" />
+      </svg>
+      <span class="brand__name">
+        キチンと死ぬ
+        <small>KITCHEN・LITERATURE</small>
+      </span>
+      <span class="brand__sub">／ キッチン徒然帖</span>
+    </a>
+    <nav class="nav" aria-label="main">
+      {nav.map((item) => (
+        <a href={item.href} class={item.active ? 'is-active' : ''}>{item.label}</a>
+      ))}
+    </nav>
+    <button class="nav-mobile-btn" aria-label="menu">≡</button>
+  </div>
+</header>
+
+<style>
+  .brand__carrot {
+    color: var(--accent-deep);
+    flex-shrink: 0;
+    transition: transform .35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .brand:hover .brand__carrot {
+    transform: rotate(-8deg) scale(1.05);
+  }
+  .brand__name {
+    display: inline-flex;
+    flex-direction: column;
+    line-height: 1;
+    font-family: var(--font-serif);
+    font-weight: 900;
+    font-size: 19px;
+    color: var(--text);
+    letter-spacing: 0.04em;
+  }
+  .brand__name small {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.22em;
+    color: var(--muted);
+    font-weight: 500;
+    margin-top: 4px;
+    text-transform: uppercase;
+  }
+  .brand__sub {
+    font-family: var(--font-serif);
+    font-size: 13px;
+    color: var(--text-dim);
+    margin-left: 4px;
+    align-self: center;
+  }
+  @media (max-width: 720px) {
+    .brand__sub { display: none; }
+    .brand__name small { display: none; }
+  }
+</style>

@@ -1,0 +1,116 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SiteHeader from '../components/SiteHeader.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+import ContactForm from '../components/ContactForm.astro';
+---
+<BaseLayout
+  title="お問い合わせ — キチンと死ぬ"
+  description="キチンと死ぬ へのご質問・ご指摘・取材依頼・記事のリクエストはこちらから。"
+>
+  <SiteHeader />
+
+  <article class="static-page">
+    <div class="container container--narrow">
+      <div class="eyebrow">CONTACT ／ キチンと死ぬ</div>
+      <h1 class="page-title">お問い合わせ</h1>
+      <p class="page-lead">
+        ご質問、ご指摘、取り上げて欲しいテーマ、取材のご相談など、何でもお寄せください。<br>
+        できる限り、3営業日以内に返信します。
+      </p>
+
+      <h2>こんなご相談、歓迎します</h2>
+      <ul>
+        <li>「うちのキッチンに合う家電を選んでほしい」</li>
+        <li>「この記事のここが間違っている」</li>
+        <li>「こういうテーマの記事を書いて欲しい」</li>
+        <li>「取材を受けたい / させてほしい」</li>
+        <li>「アフィリエイト・広告掲載の相談」</li>
+      </ul>
+
+      <h2>こちらは、ご対応できないこと</h2>
+      <ul>
+        <li>個別の故障・修理に関するご相談（メーカーサポートをご利用ください）</li>
+        <li>家電の購入代行・仕入れ代行</li>
+        <li>ステマ的な記事の執筆依頼</li>
+      </ul>
+
+      <h2>送信フォーム</h2>
+      <ContactForm
+        siteName="キチンと死ぬ"
+        siteUrl="https://kicchin-shinu.com"
+      />
+
+      <h2>返信について</h2>
+      <p>
+        いただいたご連絡には、内容を確認の上、3営業日以内を目標に返信します。
+      </p>
+      <p>
+        ただし、以下の場合は返信が遅れる、または返信を控えることがあります。あらかじめご了承ください。
+      </p>
+      <ul>
+        <li>ご質問の内容が不明確な場合</li>
+        <li>営業・宣伝目的のご連絡</li>
+        <li>同一の方から繰り返し送信される場合</li>
+        <li>記事の内容と関係のないご相談</li>
+      </ul>
+
+      <h2>取材・寄稿について</h2>
+      <p>
+        メディア・出版社・他サイトからの取材・寄稿のご相談は、以下を明記してご連絡ください。
+      </p>
+      <ul>
+        <li>媒体名 / サイト名</li>
+        <li>テーマ・趣旨</li>
+        <li>掲載予定日</li>
+        <li>原稿料 or 報酬の有無</li>
+      </ul>
+    </div>
+  </article>
+
+  <SiteFooter />
+</BaseLayout>
+
+<style>
+  .static-page {
+    padding: 80px 0 120px;
+  }
+  .page-title {
+    font-family: var(--font-heading);
+    font-size: clamp(28px, 4vw, 44px);
+    line-height: 1.4;
+    margin: 16px 0 24px;
+    color: var(--text);
+  }
+  .page-lead {
+    color: var(--text-dim);
+    font-size: 16px;
+    line-height: 1.95;
+    margin-bottom: 56px;
+    padding-bottom: 32px;
+    border-bottom: 1px solid var(--hairline);
+  }
+  .static-page h2 {
+    font-family: var(--font-heading);
+    font-size: 22px;
+    margin: 48px 0 16px;
+    color: var(--text);
+  }
+  .static-page p,
+  .static-page ul {
+    line-height: 1.95;
+    margin: 0 0 20px;
+    color: var(--text);
+  }
+  .static-page ul {
+    padding-left: 24px;
+  }
+  .static-page li {
+    margin-bottom: 6px;
+  }
+  .static-page a {
+    color: var(--accent-deep);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+</style>

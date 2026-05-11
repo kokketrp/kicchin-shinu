@@ -1,0 +1,81 @@
+---
+export interface FooterLink {
+  label: string;
+  href: string;
+}
+
+export interface Props {
+  categories?: FooterLink[];
+  siteLinks?: FooterLink[];
+  recentUpdates?: FooterLink[];
+}
+
+const {
+  categories = [
+    { label: '本編（連載エッセイ）', href: '/essay/' },
+    { label: '閑話休題', href: '/interlude/' },
+    { label: '番外編', href: '/extra/' },
+    { label: '比較レポート', href: '/posts/' },
+  ],
+  siteLinks = [
+    { label: 'このサイトのこと', href: '/about/' },
+    { label: 'プライバシーポリシー', href: '/privacy/' },
+    { label: 'お問い合わせ', href: '/contact/' },
+    { label: 'サイトマップ', href: '/sitemap-index.xml' },
+  ],
+  recentUpdates = [
+    { label: '2026.05.04 自動調理器3台', href: '/posts/auto-cooker-comparison-2026/' },
+    { label: '2026.04.21 タンク式食洗機', href: '/posts/dishwasher-tank-no-construction/' },
+    { label: '2026.04.10 ホームベーカリー', href: '/posts/bread-maker-honest-question/' },
+  ],
+} = Astro.props;
+---
+<style>
+  .footer-brand__carrot {
+    color: var(--accent-deep);
+    vertical-align: middle;
+    margin-right: 4px;
+  }
+</style>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-brand">
+          <svg class="footer-brand__carrot" width="28" height="28" viewBox="0 0 64 64" aria-hidden="true">
+            <use href="#logo-carrot-fill" />
+          </svg>
+          <span>キチンと死ぬ</span>
+        </div>
+        <p class="footer-tagline">
+          <strong>キッチンで、すり減らない。</strong><br>
+          連載エッセイと、閑話・番外編、そしてキッチン家電のスペック比較。<br>
+          台所と暮らしのあわいに、文学的な距離で寄り添う読み物サイトです。
+        </p>
+      </div>
+      <div class="footer-col">
+        <h4>もくじ</h4>
+        <ul>
+          {categories.map((l) => (<li><a href={l.href}>{l.label}</a></li>))}
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>このサイト</h4>
+        <ul>
+          {siteLinks.map((l) => (<li><a href={l.href}>{l.label}</a></li>))}
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>あたらしい記事</h4>
+        <ul>
+          {recentUpdates.map((l) => (<li><a href={l.href}>{l.label}</a></li>))}
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 キチンと死ぬ ／ kicchin-shinu</span>
+      <span>あたたかい手で、しずかに、つくっています</span>
+    </div>
+  </div>
+</footer>

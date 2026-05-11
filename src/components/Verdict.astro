@@ -1,0 +1,79 @@
+---
+// Verdict — V1 小印スタイル（検印スタンプの縮小版）
+// Claude Design v1 (glyphs/v1.html) より正式採用版
+// 「可」「否」「半」を傾けて押す。比較表のセルに置く。
+export interface Props {
+  v: 'ok' | 'no' | 'partial' | string;
+  label?: string;       // カスタムラベル（任意の漢字一文字も可）
+}
+
+const { v, label } = Astro.props;
+
+let kind: 'ok' | 'no' | 'partial' | 'custom' = 'custom';
+let symbol = label ?? v;
+
+if (v === 'ok' || v === '✅' || v === '○' || v === '◯') {
+  kind = 'ok';
+  symbol = label ?? '可';
+} else if (v === 'no' || v === '❌' || v === '－' || v === '-' || v === '×') {
+  kind = 'no';
+  symbol = label ?? '否';
+} else if (v === 'partial' || v === '△') {
+  kind = 'partial';
+  symbol = label ?? '半';
+}
+---
+<span class={`verdict verdict--seal is-${kind}`} aria-label={symbol}>{symbol}</span>
+
+<style is:global>
+  /* V1 朱印・小印スタイル（検印の縮小版） */
+  .verdict {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    vertical-align: -7px;
+    font-family: var(--font-serif);
+    font-weight: 700;
+    position: relative;
+    isolation: isolate;
+    line-height: 1;
+  }
+  .verdict--seal {
+    border: 1.6px solid currentColor;
+    border-radius: 4px;
+    font-size: 14px;
+    background: var(--bg-elev);
+    background-image:
+      radial-gradient(circle at 30% 20%, rgba(255,255,255,0.6) 0%, transparent 40%),
+      radial-gradient(circle at 70% 80%, currentColor 0%, transparent 50%);
+    filter: contrast(1.05);
+    transform: rotate(-4deg);
+    transition: transform .35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .verdict--seal::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 3px;
+    background-image: radial-gradient(circle, currentColor 0.4px, transparent 0.5px);
+    background-size: 3px 3px;
+    mix-blend-mode: multiply;
+    opacity: 0.18;
+    pointer-events: none;
+  }
+
+  /* 判定別カラー */
+  .verdict.is-ok { color: var(--good); }
+  .verdict.is-no { color: var(--muted); }
+  .verdict.is-partial { color: #8a5a1c; }
+  .verdict.is-custom { color: var(--accent-deep); }
+
+  /* hover 時の押し直し（行ホバーでも反応する形） */
+  tr:hover .verdict--seal,
+  td:hover .verdict--seal,
+  .verdict--seal:hover {
+    transform: rotate(-1deg) scale(1.05);
+  }
+</style>

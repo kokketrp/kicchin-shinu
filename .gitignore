@@ -1,0 +1,68 @@
+# build output
+dist/
+.output/
+
+# dependencies
+node_modules/
+
+# logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+install.log
+build.log
+
+# environment variables
+.env
+.env.production
+.env.local
+
+# secrets
+secrets/
+
+# macOS / OS-specific
+.DS_Store
+
+# editor
+.idea/
+.vscode/
+
+# Astro build cache
+.astro/
+
+# Cloudflare Pages local cache
+.wrangler/
+
+# dev-only internal docs (kept locally, NOT in public repo)
+# Reason: keep public repo clean of AI workflow / design process artifacts.
+DEPLOY.md
+design/
+editorial/
+preview/
+
+# Claude Code tooling artifacts (PS1 helpers, transient logs)
+*.log
+fetch-market.log
+build.log
+install.log
+commit-push.ps1
+commit-push.log
+git-diff.log
+git-log.log
+git-status.log
+git-init-and-commit.ps1
+git-init.log
+git-cleanup-dev-docs.ps1
+git-cleanup-dev-docs.log
+git-cleanup.ps1
+git-cleanup.log
+git-remote-push.ps1
+git-remote-push.log
+git-recheck.log
+git-tidy.ps1
+git-tidy.log
+push-workflow.ps1
+push-workflow.log
+gh-check.log
+.commit-msg.tmp

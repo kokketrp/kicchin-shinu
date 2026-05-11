@@ -1,0 +1,189 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SiteHeader from '../../components/SiteHeader.astro';
+import SiteFooter from '../../components/SiteFooter.astro';
+
+export async function getStaticPaths() {
+  const essays = await getCollection('essays', ({ data }) => !data.draft);
+  return essays.map((essay) => ({
+    params: { slug: essay.id },
+    props: { essay, allEssays: essays },
+  }));
+}
+
+const { essay, allEssays } = Astro.props;
+const { Content } = await render(essay);
+const formattedDate = essay.data.pubDate.toISOString().slice(0, 10);
+
+// 前後の話を計算
+const sortedByEpisode = [...allEssays].sort((a, b) => a.data.episode - b.data.episode);
+const currentIdx = sortedByEpisode.findIndex((e) => e.id === essay.id);
+const prevEssay = currentIdx > 0 ? sortedByEpisode[currentIdx - 1] : null;
+const nextEssay = currentIdx < sortedByEpisode.length - 1 ? sortedByEpisode[currentIdx + 1] : null;
+
+const episodeStr = String(essay.data.episode).padStart(2, '0');
+---
+<BaseLayout title={`第${essay.data.episode}話 ${essay.data.title} ／ キチンと死ぬ`} description={essay.data.description}>
+  <SiteHeader />
+
+  <article class="essay-article">
+    <div class="container container--narrow">
+      <header class="essay-header">
+        <div class="essay-meta-top">
+          <span class="essay-marker">本編 ／ 第 <strong>{episodeStr}</strong> 話</span>
+          <span class="essay-date">{formattedDate}</span>
+        </div>
+        <h1 class="essay-title">{essay.data.title}</h1>
+        {essay.data.subtitle && <p class="essay-subtitle">{essay.data.subtitle}</p>}
+        {essay.data.description && <p class="essay-lead">{essay.data.description}</p>}
+      </header>
+
+      <div class="essay-body prose">
+        <Content />
+      </div>
+
+      <nav class="essay-nav" aria-label="連載ナビ">
+        {prevEssay && (
+          <a href={`/essay/${prevEssay.id}/`} class="essay-nav__link essay-nav__link--prev">
+            <span class="essay-nav__label">← 前の話</span>
+            <span class="essay-nav__title">第{String(prevEssay.data.episode).padStart(2, '0')}話 {prevEssay.data.title}</span>
+          </a>
+        )}
+        <a href="/essay/" class="essay-nav__link essay-nav__link--index">
+          <span class="essay-nav__label">▦ 目次</span>
+          <span class="essay-nav__title">本編 全話一覧</span>
+        </a>
+        {nextEssay && (
+          <a href={`/essay/${nextEssay.id}/`} class="essay-nav__link essay-nav__link--next">
+            <span class="essay-nav__label">次の話 →</span>
+            <span class="essay-nav__title">第{String(nextEssay.data.episode).padStart(2, '0')}話 {nextEssay.data.title}</span>
+          </a>
+        )}
+      </nav>
+    </div>
+  </article>
+
+  <SiteFooter />
+</BaseLayout>
+
+<style>
+  .essay-article { padding: 80px 0 80px; }
+  .essay-header {
+    margin-bottom: 56px;
+    padding-bottom: 32px;
+    border-bottom: 1px solid var(--hairline);
+  }
+  .essay-meta-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 24px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+  }
+  .essay-marker {
+    color: var(--accent-deep);
+  }
+  .essay-marker strong {
+    font-size: 16px;
+    color: var(--accent);
+    font-weight: 700;
+  }
+  .essay-title {
+    font-family: var(--font-heading);
+    font-size: clamp(28px, 4vw, 44px);
+    line-height: 1.45;
+    margin: 0 0 16px;
+    color: var(--text);
+  }
+  .essay-subtitle {
+    font-family: var(--font-heading);
+    font-size: 18px;
+    color: var(--text-dim);
+    line-height: 1.6;
+    margin: 0 0 16px;
+    font-style: italic;
+  }
+  .essay-lead {
+    color: var(--text-dim);
+    font-size: 15px;
+    line-height: 1.85;
+    margin: 0;
+  }
+  .essay-body :global(h2) {
+    font-family: var(--font-heading);
+    font-size: 24px;
+    margin: 56px 0 20px;
+    color: var(--text);
+  }
+  .essay-body :global(h3) {
+    font-family: var(--font-heading);
+    font-size: 19px;
+    margin: 40px 0 14px;
+    color: var(--text);
+  }
+  .essay-body :global(p) {
+    line-height: 1.95;
+    margin: 0 0 24px;
+    color: var(--text);
+  }
+  .essay-body :global(em) {
+    font-style: normal;
+    background: linear-gradient(transparent 60%, var(--accent-soft) 60%);
+    padding: 0 2px;
+  }
+  .essay-body :global(blockquote) {
+    border-left: 3px solid var(--accent);
+    padding: 8px 20px;
+    margin: 32px 0;
+    background: var(--panel);
+    color: var(--text-dim);
+    font-style: italic;
+  }
+  .essay-body :global(a) {
+    color: var(--accent-deep);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .essay-nav {
+    margin-top: 80px;
+    padding-top: 40px;
+    border-top: 1px solid var(--hairline);
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+  }
+  @media (max-width: 720px) { .essay-nav { grid-template-columns: 1fr; } }
+  .essay-nav__link {
+    background: var(--bg-elev);
+    border: 1px solid var(--hairline);
+    border-radius: 8px;
+    padding: 16px 20px;
+    text-decoration: none;
+    color: var(--text);
+    transition: border-color .2s, transform .2s;
+  }
+  .essay-nav__link:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+  }
+  .essay-nav__link--next { text-align: right; }
+  .essay-nav__link--index { text-align: center; background: var(--panel); }
+  .essay-nav__label {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    color: var(--accent-deep);
+    margin-bottom: 6px;
+  }
+  .essay-nav__title {
+    display: block;
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--text);
+  }
+</style>

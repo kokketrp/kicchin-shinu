@@ -1,0 +1,22 @@
+# Cloudflare Pages — security & cache headers
+/*
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: SAMEORIGIN
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=()
+
+# long cache for hashed assets
+/_astro/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# fonts/images
+/*.woff2
+  Cache-Control: public, max-age=31536000, immutable
+/*.webp
+  Cache-Control: public, max-age=31536000, immutable
+/*.avif
+  Cache-Control: public, max-age=31536000, immutable
+
+# HTML — short cache so deploys propagate quickly
+/*.html
+  Cache-Control: public, max-age=0, must-revalidate

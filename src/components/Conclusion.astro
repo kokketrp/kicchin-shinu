@@ -1,0 +1,116 @@
+---
+// Conclusion — 記事冒頭の TL;DR 結論ボックス（F-system 統合）
+// 原稿用紙＋検印の世界観に揃え、絵文字弾丸ではなく serif 番号を使う
+export interface Props {
+  title?: string;
+  mark?: string;          // 検印一文字（「結」「要」等）
+}
+
+const { title = 'この記事の整理', mark = '結' } = Astro.props;
+---
+<aside class="conclusion paper" aria-label={title}>
+  <div class="conclusion__head">
+    <span class="conclusion__label">CONCLUSION ／ TL;DR</span>
+    <span class="conclusion__sub">{title}</span>
+  </div>
+  <div class="conclusion__body">
+    <slot />
+  </div>
+  <span class="stamp stamp--md conclusion__stamp">{mark}</span>
+</aside>
+
+<style>
+  .conclusion {
+    position: relative;
+    background: var(--bg-elev);
+    border: 1px solid var(--hairline);
+    border-left: 4px solid var(--accent);
+    border-radius: 10px;
+    padding: 24px 30px 22px;
+    margin: 36px 0 44px;
+    overflow: hidden;
+  }
+  .conclusion::before {
+    inset: 12px;  /* paper 方眼を内側に */
+    border-radius: 4px;
+  }
+
+  .conclusion__head {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    margin-bottom: 18px;
+    padding-bottom: 12px;
+    border-bottom: 1px dashed var(--hairline);
+  }
+  .conclusion__label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    color: var(--accent-deep);
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+  .conclusion__sub {
+    font-family: var(--font-serif);
+    font-size: 13px;
+    color: var(--text-dim);
+    font-weight: 600;
+  }
+
+  .conclusion__body {
+    position: relative;
+    z-index: 2;
+  }
+
+  /* スロット内の ul / ol を装飾 */
+  .conclusion__body :global(ul) {
+    list-style: none;
+    counter-reset: cn-item;
+    padding: 0;
+    margin: 0;
+  }
+  .conclusion__body :global(ul li) {
+    counter-increment: cn-item;
+    position: relative;
+    padding: 8px 0 8px 56px;
+    line-height: 1.85;
+    color: var(--text);
+    border-bottom: 1px dashed rgba(184, 74, 54, 0.15);
+  }
+  .conclusion__body :global(ul li:last-child) {
+    border-bottom: none;
+  }
+  .conclusion__body :global(ul li::before) {
+    content: "No.0" counter(cn-item);
+    position: absolute;
+    left: 0;
+    top: 8px;
+    font-family: var(--font-serif);
+    font-weight: 700;
+    font-size: 13px;
+    color: var(--accent-deep);
+    letter-spacing: 0.04em;
+    width: 48px;
+  }
+  .conclusion__body :global(ul li:nth-child(n+10)::before) {
+    content: "No." counter(cn-item);
+  }
+  .conclusion__body :global(strong) {
+    color: var(--text);
+    font-weight: 700;
+  }
+  .conclusion__body :global(p) {
+    line-height: 1.85;
+    margin: 0 0 12px;
+  }
+
+  .conclusion__stamp {
+    position: absolute;
+    top: 18px;
+    right: 22px;
+    z-index: 3;
+  }
+</style>

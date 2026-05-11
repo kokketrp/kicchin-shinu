@@ -1,0 +1,105 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SiteHeader from '../../components/SiteHeader.astro';
+import SiteFooter from '../../components/SiteFooter.astro';
+---
+<BaseLayout
+  title="送信ありがとうございました — キチンと死ぬ"
+  description="お問い合わせありがとうございました。3営業日以内を目標に返信します。"
+>
+  <SiteHeader />
+
+  <article class="static-page">
+    <div class="container container--narrow">
+      <div class="eyebrow">CONTACT ／ THANK YOU</div>
+      <h1 class="page-title">送信ありがとうございました。</h1>
+      <p class="page-lead">
+        ご連絡いただいた内容を確認の上、<strong>3営業日以内を目標</strong>に返信します。<br>
+        週末や祝日をまたぐ場合は、もう少し時間をいただくことがあります。
+      </p>
+
+      <div class="thanks-stamp-row">
+        <span class="stamp stamp--lg">受</span>
+      </div>
+
+      <h2>返信が届かない場合</h2>
+      <ul>
+        <li>迷惑メールフォルダをご確認ください</li>
+        <li>ドメイン <code>@gmail.com</code> からのメールを受信できる設定になっているかご確認ください</li>
+        <li>1週間以上返信がない場合、お手数ですが再度ご連絡ください</li>
+      </ul>
+
+      <div class="thanks-back">
+        <a href="/" class="thanks-back__link">← トップへ戻る</a>
+        <a href="/essay/" class="thanks-back__link">本編 連載エッセイ →</a>
+      </div>
+    </div>
+  </article>
+
+  <SiteFooter />
+</BaseLayout>
+
+<style>
+  .static-page { padding: 80px 0 120px; }
+  .page-title {
+    font-family: var(--font-serif);
+    font-weight: 700;
+    font-size: clamp(28px, 4vw, 40px);
+    line-height: 1.5;
+    margin: 16px 0 24px;
+    color: var(--text);
+  }
+  .page-lead {
+    color: var(--text-dim);
+    font-size: 16px;
+    line-height: 1.95;
+    margin-bottom: 32px;
+    padding-bottom: 32px;
+    border-bottom: 1px solid var(--hairline);
+  }
+  .thanks-stamp-row {
+    display: flex;
+    justify-content: center;
+    margin: 56px 0;
+  }
+  .static-page h2 {
+    font-family: var(--font-heading);
+    font-size: 20px;
+    margin: 40px 0 16px;
+    color: var(--text);
+  }
+  .static-page ul {
+    line-height: 1.95;
+    margin: 0 0 32px;
+    padding-left: 24px;
+    color: var(--text);
+  }
+  .static-page li {
+    margin-bottom: 6px;
+  }
+  .static-page code {
+    background: var(--panel);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: var(--font-mono);
+    font-size: 0.9em;
+  }
+  .thanks-back {
+    display: flex;
+    gap: 32px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 56px;
+    padding-top: 32px;
+    border-top: 1px dashed var(--hairline);
+  }
+  .thanks-back__link {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    letter-spacing: 0.1em;
+    color: var(--accent-deep);
+    text-decoration: none;
+    border-bottom: 1px solid var(--accent-deep);
+    padding-bottom: 3px;
+  }
+</style>

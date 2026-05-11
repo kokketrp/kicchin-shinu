@@ -8,7 +8,8 @@
     "preview": "astro preview",
     "astro": "astro",
     "check-pipeline": "node --env-file=.env scripts/check-data-pipeline.js",
-    "weekly-report": "node --env-file=.env scripts/generate-weekly-report.js"
+    "weekly-report": "node --env-file=.env scripts/generate-weekly-report.js",
+    "gsc-verify": "node --env-file=.env scripts/verify-gsc-ownership.js"
   },
   "dependencies": {
     "@astrojs/mdx": "^4.0.0",

@@ -59,6 +59,12 @@ commit-push.ps1
 commit-push.log
 .commit-msg.tmp
 git-recheck.log
+gsc-verify.log
+.verification-token.json
+check-pipeline.log
+run-weekly.ps1
+git-cleanup-dev-docs.ps1
+git-cleanup-dev-docs.log
 git-cleanup.ps1
 git-cleanup.log
 git-remote-push.ps1

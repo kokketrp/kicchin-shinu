@@ -55,6 +55,10 @@ git-init-and-commit.ps1
 git-init.log
 git-cleanup-dev-docs.ps1
 git-cleanup-dev-docs.log
+commit-push.ps1
+commit-push.log
+.commit-msg.tmp
+git-recheck.log
 git-cleanup.ps1
 git-cleanup.log
 git-remote-push.ps1

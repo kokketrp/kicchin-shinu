@@ -11,7 +11,7 @@
  * 必要な環境変数 (.env):
  *   GOOGLE_APPLICATION_CREDENTIALS=./secrets/ga4-service-account.json
  *   GA4_PROPERTY_ID=536641008
- *   GSC_SITE_URL=https://deskscape.jp
+ *   GSC_SITE_URL=https://deskmori.com
  */
 
 import { BetaAnalyticsDataClient } from '@google-analytics/data';
@@ -86,9 +86,31 @@ if (!existsSync(credPath)) {
 }
 
 // ---------- GA4 ----------
+//
+// 全クエリで Japan セグメント限定（country = "Japan"）。
+// 海外ボット/翻訳経由などの無価値 PV を最初から除外し、CV につながる日本人ユーザーの
+// 行動だけを分析・戦略会議の対象にするための方針（2026-05-13 決定）。
 
 const ga4Client = new BetaAnalyticsDataClient({ keyFilename: credPath });
 const propertyId = process.env.GA4_PROPERTY_ID;
+
+// 共通フィルタ式: country == Japan
+const JAPAN_ONLY = {
+  filter: {
+    fieldName: 'country',
+    stringFilter: { value: 'Japan', matchType: 'EXACT' },
+  },
+};
+
+// outbound_click イベント + Japan の AND
+const OUTBOUND_JAPAN_AND = {
+  andGroup: {
+    expressions: [
+      { filter: { fieldName: 'eventName', stringFilter: { value: 'outbound_click' } } },
+      JAPAN_ONLY,
+    ],
+  },
+};
 
 async function fetchSummaryMetrics(startDate, endDate) {
   const [resp] = await ga4Client.runReport({
@@ -100,6 +122,7 @@ async function fetchSummaryMetrics(startDate, endDate) {
       { name: 'averageSessionDuration' },
       { name: 'bounceRate' },
     ],
+    dimensionFilter: JAPAN_ONLY,
   });
   if (!resp.rows || resp.rows.length === 0) {
     return { pv: 0, uu: 0, avgDuration: 0, bounceRate: 0 };
@@ -126,6 +149,7 @@ async function fetchPageBreakdown(startDate, endDate, limit = 20) {
     ],
     orderBys: [{ metric: { metricName: 'screenPageViews' }, desc: true }],
     limit,
+    dimensionFilter: JAPAN_ONLY,
   });
   return (resp.rows || []).map((r) => ({
     path: r.dimensionValues[0].value,
@@ -142,9 +166,7 @@ async function fetchOutboundClicks(startDate, endDate) {
     dateRanges: [{ startDate, endDate }],
     dimensions: [{ name: 'pagePath' }],
     metrics: [{ name: 'eventCount' }],
-    dimensionFilter: {
-      filter: { fieldName: 'eventName', stringFilter: { value: 'outbound_click' } },
-    },
+    dimensionFilter: OUTBOUND_JAPAN_AND,
     orderBys: [{ metric: { metricName: 'eventCount' }, desc: true }],
     limit: 20,
   });
@@ -163,6 +185,13 @@ const auth = new google.auth.GoogleAuth({
 const searchconsole = google.searchconsole({ version: 'v1', auth });
 const siteUrl = process.env.GSC_SITE_URL;
 
+// GSC の Japan セグメント (ISO 3166-1 alpha-3 lowercase = "jpn")
+const GSC_JAPAN_FILTER_GROUP = {
+  filters: [
+    { dimension: 'country', operator: 'equals', expression: 'jpn' },
+  ],
+};
+
 async function fetchQueries(startDate, endDate, rowLimit = 200) {
   const res = await searchconsole.searchanalytics.query({
     siteUrl,
@@ -170,6 +199,7 @@ async function fetchQueries(startDate, endDate, rowLimit = 200) {
       startDate, endDate,
       dimensions: ['query'],
       rowLimit,
+      dimensionFilterGroups: [GSC_JAPAN_FILTER_GROUP],
     },
   });
   return (res.data.rows || []).map((r) => ({
@@ -188,6 +218,7 @@ async function fetchPageQueries(startDate, endDate, rowLimit = 500) {
       startDate, endDate,
       dimensions: ['page', 'query'],
       rowLimit,
+      dimensionFilterGroups: [GSC_JAPAN_FILTER_GROUP],
     },
   });
   return (res.data.rows || []).map((r) => ({
@@ -349,11 +380,13 @@ function buildMarkdown(data, weekInfo, period) {
   md.push(`date: ${new Date().toISOString().slice(0, 10)}`);
   md.push(`period: ${period.start} - ${period.end}`);
   md.push(`type: weekly-report`);
+  md.push(`segment: Japan only (country = "Japan" / "jpn")`);
   md.push(`---`);
   md.push('');
   md.push(`# Week ${weekInfo.label} レポート`);
   md.push('');
   md.push(`期間: **${period.start} 〜 ${period.end}**（前週比較あり）`);
+  md.push(`セグメント: **🇯🇵 日本国内アクセスのみ**（GA4 country=Japan / GSC country=jpn）`);
   md.push('');
 
   // Summary

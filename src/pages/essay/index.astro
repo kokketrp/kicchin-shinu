@@ -5,7 +5,7 @@ import SiteHeader from '../../components/SiteHeader.astro';
 import SiteFooter from '../../components/SiteFooter.astro';
 import EssayCard from '../../components/EssayCard.astro';
 
-const essays = await getCollection('essays');
+const essays = await getCollection('essays', ({ data }) => !data.draft);
 const sorted = essays.sort((a, b) => a.data.episode - b.data.episode);
 
 const draftCategoryByEpisode: Record<number, string> = {
@@ -21,7 +21,7 @@ const draftExpectedByEpisode: Record<number, string> = {
 ---
 <BaseLayout
   title="本編 連載エッセイ ／ キチンと死ぬ"
-  description="キチンと死ぬ の本編。30代主婦が、台所と暮らしのあわいを書き留める連載エッセイの全話一覧です。"
+  description="キチンと死ぬ の本編。台所と暮らしのあわいを生活動線の観察として書き留める連載エッセイの全話一覧です。"
 >
   <SiteHeader />
 

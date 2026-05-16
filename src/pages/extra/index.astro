@@ -5,7 +5,7 @@ import SiteHeader from '../../components/SiteHeader.astro';
 import SiteFooter from '../../components/SiteFooter.astro';
 import ExtraCard from '../../components/ExtraCard.astro';
 
-const extras = await getCollection('extras');
+const extras = await getCollection('extras', ({ data }) => !data.draft);
 const sorted = extras.sort((a, b) => a.data.number - b.data.number);
 ---
 <BaseLayout

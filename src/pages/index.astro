@@ -10,10 +10,10 @@ import InterludeCard from '../components/InterludeCard.astro';
 import ExtraCard from '../components/ExtraCard.astro';
 import ReportCard from '../components/ReportCard.astro';
 
-// 全件取得（drafts も TOP には表示する）
-const allEssays = (await getCollection('essays')).sort((a, b) => a.data.episode - b.data.episode);
-const allInterludes = (await getCollection('interludes')).sort((a, b) => a.data.number - b.data.number);
-const allExtras = (await getCollection('extras')).sort((a, b) => a.data.number - b.data.number);
+// draft 化されたものは TOP に表示しない（凍結記事を隠す）
+const allEssays = (await getCollection('essays', ({ data }) => !data.draft)).sort((a, b) => a.data.episode - b.data.episode);
+const allInterludes = (await getCollection('interludes', ({ data }) => !data.draft)).sort((a, b) => a.data.number - b.data.number);
+const allExtras = (await getCollection('extras', ({ data }) => !data.draft)).sort((a, b) => a.data.number - b.data.number);
 const posts = (await getCollection('posts', ({ data }) => !data.draft))
   .sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime());
 

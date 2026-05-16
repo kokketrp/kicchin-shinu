@@ -5,7 +5,7 @@ import SiteHeader from '../../components/SiteHeader.astro';
 import SiteFooter from '../../components/SiteFooter.astro';
 import InterludeCard from '../../components/InterludeCard.astro';
 
-const interludes = await getCollection('interludes');
+const interludes = await getCollection('interludes', ({ data }) => !data.draft);
 const sorted = interludes.sort((a, b) => a.data.number - b.data.number);
 ---
 <BaseLayout

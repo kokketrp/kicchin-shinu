@@ -176,6 +176,118 @@ async function fetchOutboundClicks(startDate, endDate) {
   }));
 }
 
+// ---------- 戦略系メトリクス（2026-05-16 追加：層2 温度感の数字を補完）----------
+//
+// 既存の summary は「層1 健康診断（PV/UU/CV）」のみ。
+// _docs/07_KPI_PHILOSOPHY.md「ダッシュボード設計」では、層2（温度感）を加えた
+// 「数字 3 割・言葉 7 割」が推奨されており、以下 4 関数で層2 数字部分を補完する。
+//
+// - 流入元内訳 → サイトの「発見されかた」を可視化
+// - デバイス別 → 読者の利用シーン推定
+// - 時間帯別 → 読者の生活リズムとの整合性
+// - 再訪率 → サイト愛着度の核（最重要）
+
+async function fetchTrafficSources(startDate, endDate) {
+  const [resp] = await ga4Client.runReport({
+    property: `properties/${propertyId}`,
+    dateRanges: [{ startDate, endDate }],
+    dimensions: [{ name: 'sessionDefaultChannelGroup' }],
+    metrics: [
+      { name: 'screenPageViews' },
+      { name: 'totalUsers' },
+      { name: 'sessions' },
+    ],
+    orderBys: [{ metric: { metricName: 'screenPageViews' }, desc: true }],
+    dimensionFilter: JAPAN_ONLY,
+    limit: 10,
+  });
+  return (resp.rows || []).map((r) => ({
+    channel: r.dimensionValues[0].value || '(not set)',
+    pv: parseInt(r.metricValues[0].value || 0),
+    uu: parseInt(r.metricValues[1].value || 0),
+    sessions: parseInt(r.metricValues[2].value || 0),
+  }));
+}
+
+async function fetchDeviceBreakdown(startDate, endDate) {
+  const [resp] = await ga4Client.runReport({
+    property: `properties/${propertyId}`,
+    dateRanges: [{ startDate, endDate }],
+    dimensions: [{ name: 'deviceCategory' }],
+    metrics: [
+      { name: 'screenPageViews' },
+      { name: 'totalUsers' },
+      { name: 'averageSessionDuration' },
+      { name: 'bounceRate' },
+    ],
+    orderBys: [{ metric: { metricName: 'screenPageViews' }, desc: true }],
+    dimensionFilter: JAPAN_ONLY,
+  });
+  return (resp.rows || []).map((r) => ({
+    device: r.dimensionValues[0].value || '(not set)',
+    pv: parseInt(r.metricValues[0].value || 0),
+    uu: parseInt(r.metricValues[1].value || 0),
+    avgDuration: parseFloat(r.metricValues[2].value || 0),
+    bounceRate: parseFloat(r.metricValues[3].value || 0),
+  }));
+}
+
+async function fetchHourlyPattern(startDate, endDate) {
+  const [resp] = await ga4Client.runReport({
+    property: `properties/${propertyId}`,
+    dateRanges: [{ startDate, endDate }],
+    dimensions: [{ name: 'hour' }],
+    metrics: [{ name: 'screenPageViews' }, { name: 'totalUsers' }],
+    dimensionFilter: JAPAN_ONLY,
+  });
+  // hour は "00" 〜 "23" の文字列
+  // 朝(6-11) / 昼(12-17) / 夜(18-23) / 深夜(0-5) に集約
+  const buckets = {
+    '🌅 朝 (6-11)': { pv: 0, uu: 0, hours: '06-11' },
+    '☀️ 昼 (12-17)': { pv: 0, uu: 0, hours: '12-17' },
+    '🌙 夜 (18-23)': { pv: 0, uu: 0, hours: '18-23' },
+    '🌌 深夜 (0-5)': { pv: 0, uu: 0, hours: '00-05' },
+  };
+  for (const r of resp.rows || []) {
+    const h = parseInt(r.dimensionValues[0].value);
+    const pv = parseInt(r.metricValues[0].value || 0);
+    const uu = parseInt(r.metricValues[1].value || 0);
+    let key;
+    if (h >= 6 && h <= 11) key = '🌅 朝 (6-11)';
+    else if (h >= 12 && h <= 17) key = '☀️ 昼 (12-17)';
+    else if (h >= 18 && h <= 23) key = '🌙 夜 (18-23)';
+    else key = '🌌 深夜 (0-5)';
+    buckets[key].pv += pv;
+    buckets[key].uu += uu;
+  }
+  return Object.entries(buckets).map(([label, v]) => ({ label, ...v }));
+}
+
+async function fetchNewVsReturning(startDate, endDate) {
+  const [resp] = await ga4Client.runReport({
+    property: `properties/${propertyId}`,
+    dateRanges: [{ startDate, endDate }],
+    dimensions: [{ name: 'newVsReturning' }],
+    metrics: [
+      { name: 'screenPageViews' },
+      { name: 'totalUsers' },
+      { name: 'averageSessionDuration' },
+    ],
+    dimensionFilter: JAPAN_ONLY,
+  });
+  const result = { new: { pv: 0, uu: 0, avgDuration: 0 }, returning: { pv: 0, uu: 0, avgDuration: 0 } };
+  for (const r of resp.rows || []) {
+    const key = r.dimensionValues[0].value === 'new' ? 'new' : (r.dimensionValues[0].value === 'returning' ? 'returning' : null);
+    if (!key) continue;
+    result[key].pv = parseInt(r.metricValues[0].value || 0);
+    result[key].uu = parseInt(r.metricValues[1].value || 0);
+    result[key].avgDuration = parseFloat(r.metricValues[2].value || 0);
+  }
+  const totalUu = result.new.uu + result.returning.uu;
+  result.returningRate = totalUu > 0 ? result.returning.uu / totalUu : 0;
+  return result;
+}
+
 // ---------- GSC ----------
 
 const auth = new google.auth.GoogleAuth({
@@ -428,6 +540,75 @@ function buildMarkdown(data, weekInfo, period) {
   }
   md.push('');
 
+  // === 戦略系メトリクス（2026-05-16 追加：層2 温度感）===
+
+  // 再訪率（最重要、サイト愛着度の核）
+  md.push(`## 🔁 再訪率（New vs Returning）`);
+  md.push('');
+  md.push(`サイト愛着度の核指標。\`_docs/07_KPI_PHILOSOPHY.md\` 層2 温度感に該当。`);
+  md.push('');
+  md.push(`| 種別 | UU | PV | 平均滞在 |`);
+  md.push(`|---|---|---|---|`);
+  md.push(`| 🆕 新規 | ${data.thisWeek.newVsReturning.new.uu} | ${data.thisWeek.newVsReturning.new.pv} | ${data.thisWeek.newVsReturning.new.avgDuration.toFixed(0)}s |`);
+  md.push(`| 🔁 リピーター | ${data.thisWeek.newVsReturning.returning.uu} | ${data.thisWeek.newVsReturning.returning.pv} | ${data.thisWeek.newVsReturning.returning.avgDuration.toFixed(0)}s |`);
+  md.push('');
+  md.push(`**再訪率: ${(data.thisWeek.newVsReturning.returningRate * 100).toFixed(1)}%**（前週 ${(data.lastWeek.newVsReturning.returningRate * 100).toFixed(1)}% → ${deltaPP(data.thisWeek.newVsReturning.returningRate, data.lastWeek.newVsReturning.returningRate)}）`);
+  md.push('');
+
+  // 流入元内訳
+  md.push(`## 🚪 流入元内訳`);
+  md.push('');
+  md.push(`サイトの「発見されかた」。Organic Search 比率が高い = SEO 健全、Direct 比率が高い = ブックマーク・口コミ層あり。`);
+  md.push('');
+  if (data.thisWeek.trafficSources.length === 0) {
+    md.push(`データなし（蓄積中）。`);
+  } else {
+    md.push(`| チャネル | PV | UU | セッション | PV比率 |`);
+    md.push(`|---|---|---|---|---|`);
+    const totalPv = data.thisWeek.trafficSources.reduce((s, c) => s + c.pv, 0);
+    data.thisWeek.trafficSources.forEach((c) => {
+      const ratio = totalPv > 0 ? ((c.pv / totalPv) * 100).toFixed(1) + '%' : '-';
+      md.push(`| ${c.channel} | ${c.pv} | ${c.uu} | ${c.sessions} | ${ratio} |`);
+    });
+  }
+  md.push('');
+
+  // デバイス別
+  md.push(`## 📱 デバイス別`);
+  md.push('');
+  md.push(`読者の利用シーン推定。Mobile 比率と平均滞在時間の関係性に注目。`);
+  md.push('');
+  if (data.thisWeek.devices.length === 0) {
+    md.push(`データなし（蓄積中）。`);
+  } else {
+    md.push(`| デバイス | PV | UU | 平均滞在 | 離脱率 |`);
+    md.push(`|---|---|---|---|---|`);
+    data.thisWeek.devices.forEach((d) => {
+      md.push(`| ${d.device} | ${d.pv} | ${d.uu} | ${d.avgDuration.toFixed(0)}s | ${(d.bounceRate * 100).toFixed(0)}% |`);
+    });
+  }
+  md.push('');
+
+  // 時間帯別アクセスパターン
+  md.push(`## 🕐 時間帯別アクセスパターン`);
+  md.push('');
+  md.push(`読者の生活リズム。サイト世界観と整合してるか確認用。`);
+  md.push('');
+  if (data.thisWeek.hourly.length === 0 || data.thisWeek.hourly.every((h) => h.pv === 0)) {
+    md.push(`データなし（蓄積中）。`);
+  } else {
+    const totalPv = data.thisWeek.hourly.reduce((s, h) => s + h.pv, 0);
+    md.push(`| 時間帯 | PV | UU | PV比率 |`);
+    md.push(`|---|---|---|---|`);
+    data.thisWeek.hourly.forEach((h) => {
+      const ratio = totalPv > 0 ? ((h.pv / totalPv) * 100).toFixed(1) + '%' : '-';
+      md.push(`| ${h.label} | ${h.pv} | ${h.uu} | ${ratio} |`);
+    });
+  }
+  md.push('');
+
+  // === 既存セクション（GSC 系）===
+
   // Improvement candidates
   md.push(`## 📉 改善候補TOP5（高imp × 低CTR × 順位10位以内）`);
   md.push('');
@@ -536,6 +717,21 @@ function buildMarkdown(data, weekInfo, period) {
     data.thisWeek.outboundClicks = await fetchOutboundClicks(period.start, period.end);
     data.lastWeek.outboundClicks = await fetchOutboundClicks(lastPeriod.start, lastPeriod.end);
     log.ok(`outbound_click 今週 ${data.thisWeek.outboundClicks.length} ページ / 前週 ${data.lastWeek.outboundClicks.length} ページ`);
+
+    // 戦略系メトリクス（2026-05-16 追加：層2 温度感）
+    data.thisWeek.trafficSources = await fetchTrafficSources(period.start, period.end);
+    data.lastWeek.trafficSources = await fetchTrafficSources(lastPeriod.start, lastPeriod.end);
+    log.ok(`流入元 今週 ${data.thisWeek.trafficSources.length} チャネル`);
+
+    data.thisWeek.devices = await fetchDeviceBreakdown(period.start, period.end);
+    log.ok(`デバイス別 ${data.thisWeek.devices.length} 種`);
+
+    data.thisWeek.hourly = await fetchHourlyPattern(period.start, period.end);
+    log.ok(`時間帯別 4 バケット集計`);
+
+    data.thisWeek.newVsReturning = await fetchNewVsReturning(period.start, period.end);
+    data.lastWeek.newVsReturning = await fetchNewVsReturning(lastPeriod.start, lastPeriod.end);
+    log.ok(`再訪率 今週 ${(data.thisWeek.newVsReturning.returningRate * 100).toFixed(1)}% / 前週 ${(data.lastWeek.newVsReturning.returningRate * 100).toFixed(1)}%`);
   } catch (e) {
     log.err(`GA4 取得失敗: ${e.message}`);
     log.warn('部分データで継続');
@@ -544,6 +740,12 @@ function buildMarkdown(data, weekInfo, period) {
     data.thisWeek.pages = data.thisWeek.pages || [];
     data.thisWeek.outboundClicks = data.thisWeek.outboundClicks || [];
     data.lastWeek.outboundClicks = data.lastWeek.outboundClicks || [];
+    data.thisWeek.trafficSources = data.thisWeek.trafficSources || [];
+    data.lastWeek.trafficSources = data.lastWeek.trafficSources || [];
+    data.thisWeek.devices = data.thisWeek.devices || [];
+    data.thisWeek.hourly = data.thisWeek.hourly || [];
+    data.thisWeek.newVsReturning = data.thisWeek.newVsReturning || { new: { pv: 0, uu: 0 }, returning: { pv: 0, uu: 0 }, returningRate: 0 };
+    data.lastWeek.newVsReturning = data.lastWeek.newVsReturning || { new: { pv: 0, uu: 0 }, returning: { pv: 0, uu: 0 }, returningRate: 0 };
   }
 
   // GSC (48-72h delay so use earlier dates)

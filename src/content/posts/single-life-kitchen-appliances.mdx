@@ -10,6 +10,7 @@ draft: false
 
 import Conclusion from '../../components/Conclusion.astro';
 import Glyph from '../../components/Glyph.astro';
+import ProductBox from '../../components/ProductBox.astro';
 
 <Conclusion title="一人暮らしに、ちょうど良い4つ">
   - **小型電気圧力鍋**（1.6L 前後 / Re・De Pot, シロカ SP-2DM251）
@@ -44,6 +45,19 @@ import Glyph from '../../components/Glyph.astro';
 
 容量1.6〜2L 前後は、1〜2人分の主菜にちょうど良いサイズです。
 
+<ProductBox
+  keyword="Re・De Pot 電気圧力鍋"
+  brand="Re・De"
+  specs={[
+    '1.8L 容量（1〜2 人分の主菜に）',
+    'スリムでデザインが台所に置きやすい',
+    '蒸し・煮込み・炊飯 1 台',
+    '価格 2 万円台後半〜',
+  ]}
+  minPrice={20000}
+  maxPrice={35000}
+/>
+
 ### 2. コンパクトタンク式食洗機
 
 「自分一人のために？」と迷う家電ですが、**自炊頻度が上がる** という副作用があります。
@@ -52,6 +66,19 @@ import Glyph from '../../components/Glyph.astro';
 - **サンコー ラクア mini**：上から入れる窓があり、置き場所の自由度が高い
 
 賃貸でも工事不要で置けます。横幅 30cm 台なので、ワンルームのキッチンにも入りやすい。
+
+<ProductBox
+  keyword="AINX 食洗機 AX-S3"
+  brand="AINX"
+  specs={[
+    '横幅約 31cm、ワンルーム対応',
+    'タンク式（工事不要）',
+    'お椀・茶碗・小皿中心の 1〜2 人分',
+    '価格 4 万円台〜',
+  ]}
+  minPrice={38000}
+  maxPrice={55000}
+/>
 
 ### 3. 電気ケトル（0.8L 前後）
 
@@ -62,6 +89,19 @@ import Glyph from '../../components/Glyph.astro';
 
 容量1.0L 以下を選ぶと、必要な分だけ沸かせて電気代も抑えられます。
 
+<ProductBox
+  keyword="T-fal アプレシア・エージー・プラス・ロック 0.8L 電気ケトル"
+  brand="T-fal"
+  specs={[
+    '容量 0.8L（カップ 1 杯〜2 杯にちょうど良い）',
+    '抗菌仕様、ロック機能',
+    'カップ 1 杯が約 1 分で沸く',
+    '価格 5,000 円前後',
+  ]}
+  minPrice={4500}
+  maxPrice={7000}
+/>
+
 ### 4. マルチホットサンドメーカー
 
 「料理は面倒だけど、何か温かいものを食べたい夜」に強い味方です。具材を挟んで焼くだけで、立派な一食になります。
@@ -70,6 +110,19 @@ import Glyph from '../../components/Glyph.astro';
 - **récolte プレスサンドメーカー**：シンプルで価格が抑えめ
 
 平日の遅い夜の救済装置として優秀です。
+
+<ProductBox
+  keyword="BRUNO ホットサンドメーカー シングル"
+  brand="BRUNO"
+  specs={[
+    'プレート交換でワッフル・小型グリルにも対応',
+    'シンプル操作（挟んで焼くだけ）',
+    'デザインが台所に置きやすい',
+    '価格 5,000〜7,000 円台',
+  ]}
+  minPrice={4500}
+  maxPrice={8500}
+/>
 
 <h2><Glyph name="box" /> 置き場所から逆算する</h2>
 

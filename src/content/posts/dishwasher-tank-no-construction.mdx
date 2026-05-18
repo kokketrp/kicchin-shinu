@@ -11,6 +11,7 @@ draft: false
 import Conclusion from '../../components/Conclusion.astro';
 import CompareTable from '../../components/CompareTable.astro';
 import Glyph from '../../components/Glyph.astro';
+import ProductBox from '../../components/ProductBox.astro';
 
 <Conclusion title="まずタイプ別の整理">
   - **工事NG・賃貸**：タンク式（パナソニック NP-TSP1 / シロカ SS-MA251）
@@ -58,6 +59,19 @@ import Glyph from '../../components/Glyph.astro';
 
 「給水が面倒では？」という質問は多いのですが、毎食ペットボトル1本分を注ぐ程度です。手洗いの労力と比べれば、ほとんどの方が「気にならなくなった」と話します。
 
+<ProductBox
+  keyword="パナソニック 食洗機 NP-TSP1"
+  brand="Panasonic"
+  specs={[
+    '5 人分対応（3〜4 人家族にも余裕）',
+    'タンク式 + 分岐水栓 両対応',
+    '工事不要、引っ越し時に持ち運び可',
+    '価格 8〜11 万円台',
+  ]}
+  minPrice={80000}
+  maxPrice={110000}
+/>
+
 ### 持家・5人以上 — 分岐水栓モデル
 
 家族が多いと、容量が正義になります。一日に何度も回すより、一度にまとめて洗える方が、夜の余白が生まれやすい印象です。
@@ -66,12 +80,38 @@ import Glyph from '../../components/Glyph.astro';
 
 工事費は1〜2万円かかりますが、長期で見れば手洗い時間の削減量がかなり大きい領域です。
 
+<ProductBox
+  keyword="パナソニック 食洗機 NP-TZ300"
+  brand="Panasonic"
+  specs={[
+    '6 人分対応（食器 40 点）',
+    '分岐水栓接続（工事必要）',
+    'ストリーム除菌洗浄・ヒーター乾燥',
+    '価格 9〜13 万円台',
+  ]}
+  minPrice={95000}
+  maxPrice={130000}
+/>
+
 ### 一人暮らし・狭小キッチン — コンパクトタンク式
 
 「自分一人のために食洗機？」と迷う方が多いカテゴリです。実際に置いてみると、**自炊頻度が上がる**という副作用があります。後片付けが軽くなると、料理を作る心理的ハードルが下がるためです。
 
 - **AINX AX-S3**：横幅約 31cm、お椀・茶碗・小皿が中心の方に
 - **サンコー ラクア mini**：上から入れる窓があり、置き場所の自由度が高い
+
+<ProductBox
+  keyword="AINX 食洗機 AX-S3"
+  brand="AINX"
+  specs={[
+    '横幅約 31cm（ワンルーム対応）',
+    'タンク式（工事不要）',
+    'お椀・茶碗・小皿中心の 1〜2 人分',
+    '価格 4〜5 万円台',
+  ]}
+  minPrice={38000}
+  maxPrice={55000}
+/>
 
 <h2><Glyph name="clock" /> 失敗しがちなポイント</h2>
 

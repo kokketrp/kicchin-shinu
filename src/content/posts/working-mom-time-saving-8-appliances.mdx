@@ -10,6 +10,7 @@ draft: false
 
 import Conclusion from '../../components/Conclusion.astro';
 import Glyph from '../../components/Glyph.astro';
+import ProductBox from '../../components/ProductBox.astro';
 
 <Conclusion title="平日10分を短くする 8つの家電">
   - **自動調理鍋**（朝セット → 夜できあがり）
@@ -59,11 +60,37 @@ import Glyph from '../../components/Glyph.astro';
 - 候補：シャープ ホットクック / アイリス クッキングプロ / Re・De Pot
 - 価格帯：3〜6万円
 
+<ProductBox
+  keyword="シャープ ヘルシオ ホットクック KN-HW24G"
+  brand="SHARP"
+  specs={[
+    '2.4L（4 人家族向け）',
+    'かき混ぜ自動・予約調理対応',
+    '朝セット→夜できあがり運用',
+    '価格 5〜6 万円台',
+  ]}
+  minPrice={45000}
+  maxPrice={70000}
+/>
+
 ### 2. 食洗機
 
 「夜の30分が消える」体験は、想像以上に大きい。詳細は別記事で扱います。
 
 - 候補：パナソニック NP-TSP1 / シロカ SS-MA251
+
+<ProductBox
+  keyword="パナソニック 食洗機 NP-TSP1"
+  brand="Panasonic"
+  specs={[
+    '5 人分対応（4 人家族にも余裕）',
+    'タンク式 + 分岐水栓 両対応',
+    '工事不要で賃貸でも置ける',
+    '価格 8〜11 万円台',
+  ]}
+  minPrice={80000}
+  maxPrice={110000}
+/>
 
 ### 3. 高速炊飯
 
@@ -82,6 +109,19 @@ import Glyph from '../../components/Glyph.astro';
 ### 6. 電気圧力鍋
 
 火加減を見なくていい家電は、心の余裕を作ります。「鍋を見張らなくていい」のは想像以上に大きい解放感です。
+
+<ProductBox
+  keyword="Re・De Pot 電気圧力鍋"
+  brand="Re・De"
+  specs={[
+    '1.8L 容量（2〜4 人分）',
+    'デザインが台所に置きやすい',
+    '予約タイマー対応',
+    '価格 2〜3 万円台',
+  ]}
+  minPrice={20000}
+  maxPrice={35000}
+/>
 
 ### 7. 大容量冷凍庫 or セカンド冷凍庫
 

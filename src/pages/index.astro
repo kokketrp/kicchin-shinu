@@ -34,20 +34,11 @@ function tagVariantOf(category?: string): 'default' | 'mustard' | 'neutral' {
   return 'default';
 }
 
-// 第N話 → 想定カテゴリラベル（drafts用）
-const draftCategoryByEpisode: Record<number, string> = {
-  2: '食洗機',
-  3: 'ベーカリー',
-  4: '時短家電',
-  5: '予算別',
-  6: '一人暮らし',
-};
-const draftExpectedByEpisode: Record<number, string> = {
-  2: 'EXPECTED 2026.06',
-  3: 'EXPECTED 2026.06',
-  4: 'EXPECTED 2026.07',
-  5: 'EXPECTED 2026.08',
-  6: 'EXPECTED 2026.09',
+// 連載「押入れの家電たち」第N回 → カテゴリラベル
+const categoryByEpisode: Record<number, string> = {
+  1: 'ベーカリー',
+  2: '時短家電',
+  3: '自動調理',
 };
 ---
 <BaseLayout>
@@ -77,8 +68,7 @@ const draftExpectedByEpisode: Record<number, string> = {
             href={e.data.draft ? undefined : `/essay/${e.id}/`}
             readTime={e.data.draft ? undefined : '14 MIN'}
             draft={e.data.draft}
-            expectedDate={e.data.draft ? draftExpectedByEpisode[e.data.episode] : undefined}
-            category={draftCategoryByEpisode[e.data.episode] ?? '自動調理'}
+            category={categoryByEpisode[e.data.episode] ?? '押入れの家電たち'}
           />
         ))}
       </div>
@@ -160,7 +150,7 @@ const draftExpectedByEpisode: Record<number, string> = {
       <div class="report-grid">
         {posts.slice(0, 4).map((p, i) => (
           <ReportCard
-            vol={posts.length - i + 8}
+            vol={posts.length - i}
             title={p.data.title}
             pubDate={p.data.pubDate}
             href={`/posts/${p.id}/`}

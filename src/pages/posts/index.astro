@@ -43,7 +43,7 @@ function tagVariantOf(category?: string): 'default' | 'mustard' | 'neutral' {
       <div class="report-grid">
         {sorted.map((p, i) => (
           <ReportCard
-            vol={sorted.length - i + 8}
+            vol={sorted.length - i}
             title={p.data.title}
             pubDate={p.data.pubDate}
             href={`/posts/${p.id}/`}

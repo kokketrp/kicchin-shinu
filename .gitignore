@@ -42,6 +42,14 @@ editorial/
 preview/
 
 # Claude Code tooling artifacts (PS1 helpers, transient logs)
+# .claude/ contains worktree-internal operational artifacts:
+#   - audit-input/output logs (GPT API responses, internal discussions)
+#   - PS1 helpers (run-audit.ps1, git-runner.ps1, etc.)
+#   - launch.json (preview server config)
+#   - settings.local.json (permission settings)
+#   - scheduled_tasks.lock (OS-specific lock)
+# All operational, not source — keep out of public repo.
+.claude/
 *.log
 fetch-market.log
 build.log
